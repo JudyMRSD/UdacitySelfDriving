@@ -9,4 +9,12 @@ Input: video from camera mounted on top of a car
 Output: annotated video 
 Tools: color selection, region of interest selection, grayscaling, Gaussian smoothing, Canny Edge Detection and Hough Tranform line detection
 
+Files
+-----
+P1.ipynb  : implementation
+
+Instruction
+----------
+source activate carnd-term1
+jupyter notebook
 

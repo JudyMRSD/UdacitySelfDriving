@@ -17,6 +17,7 @@ low_threshold = 50
 high_threshold = 150
 masked_edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
 
+
 # Define the Hough transform parameters
 # Make a blank the same size as out image to draw on
 rho = 1

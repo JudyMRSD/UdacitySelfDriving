@@ -28,15 +28,15 @@ Step 5. Extrapolate line segments, superimpose on the original image, output as 
 
 ### Details on draw_two_lines() function
 
-**input **
+**Input**
 
 all the output lines from hough line detection
 
-**parametesr **
+**Parametesr**
 
 set a min and max slope to identify outliers 
 
-**Steps **
+**Steps**
 
 &nbsp;
 

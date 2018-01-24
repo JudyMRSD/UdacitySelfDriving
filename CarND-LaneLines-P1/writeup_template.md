@@ -26,29 +26,39 @@ Summary of my implementation:
 
 
 **Details on draw_two_lines() function**
+
 input: 
+
 all the output lines from hough line detection
 
 parametesr:
+
 set a min and max slope to identify outliers 
 
 Steps:
-loop through all the lines 
-    Positive slopes belong to left lines, negative slope belong to right lines.
-    Find slope (m) and bias (b) for each line
-    if the line is not an outlier:
-        store the line parameters (m, b) as left line or right line
-        
-find the mean value for m, b for left and right lines 
 
-Use mean values to find the two end points for each of the left line and right line
+&nbsp;
+
+    loop through all the lines 
+    
+        Positive slopes belong to left lines, negative slope belong to right lines.
+
+        Find slope (m) and bias (b) for each line
+    
+        if the line is not an outlier:
+    
+            store the line parameters (m, b) in the left line or right line parameter array 
+        
+    find the mean value for m, b for left and right lines 
+
+    Use mean m, b values to find the two end points for each of the left line and right line
 
 
 
 ### 2. Identify potential shortcomings with your current pipeline
 
 One shortcoming is that it fails for the challenging case, where the lane lines are curved.  
-The hough line function only find staight edges and extrapolate it. 
+The current hough line function only find staight edges and extrapolate it. 
 
 ### 3. Suggest possible improvements to your pipeline
 

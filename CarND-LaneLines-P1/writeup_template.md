@@ -10,9 +10,9 @@
 Summary of my implementation:
 
 Step 1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
-<img src="./result_images/gray_scale.jpg" width="480" />
+<img src="./result_images/gray_scale.jpg" width="480" /> <br />
 
-Step 2. Canny edge
+Step 2. Canny edge <br />
 <img src="./result_images/canny_edge.jpg" width="480" />
 
 Step 3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked

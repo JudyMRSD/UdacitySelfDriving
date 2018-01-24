@@ -4,27 +4,21 @@
 
 ### Pipeline
 
----
-[//]: # (Image References)
-[gray_scale]: ./result_images/gray_scale.jpg "Grayscale"
-[canny_edge]: ./result_images/canny_edge.jpg "Grayscale"
-[region_mask]: ./result_images/region_mask.jpg "Grayscale"
-[hough_all_edge]: ./result_images/canny_edge.jpg "hough_all_lines"
-[hough_edge]: ./result_images/canny_edge.jpg "hough_lines"
 
 **Finding Lane Lines on the Road**
+
 Summary of my implementation:
 
 1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
-![alt text][gray_scale=250x]
+<img src="./result_images/gray_scale.jpg" width="480" />
 2.Canny edge detection, output img_edges
-![alt text][canny_edge=250x]
+<img src="./result_images/canny_edge.jpg" width="480" />
 3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked
-![alt text][region_mask=250x]
+<img src="./result_images/region_mask.jpg" width="480" />
 4. Hough transform to detect lines in an image, input : img_edges_masked, output: img_lines
-![alt text][region_mask=250x]
+<img src="./result_images/hough_all_lines.jpg" width="480" />
 5. Extrapolate line segments, superimpose on the original image, output as final result
-![alt text][hough_edge=250x]
+<img src="./result_images/hough_lines.jpg" width="480" />
 
 
 **Details on draw_two_lines() function**

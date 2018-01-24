@@ -9,33 +9,34 @@
 
 Summary of my implementation:
 
-1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
+Step 1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
 <img src="./result_images/gray_scale.jpg" width="480" />
 
-2. Canny edge
+Step 2. Canny edge
 <img src="./result_images/canny_edge.jpg" width="480" />
 
-3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked
+Step 3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked
 <img src="./result_images/region_mask.jpg" width="480" />
 
-4. Hough transform to detect lines in an image, input : img_edges_masked, output: img_lines
+Step 4. Hough transform to detect lines in an image, input : img_edges_masked, output: img_lines
 <img src="./result_images/hough_all_lines.jpg" width="480" />
 
-5. Extrapolate line segments, superimpose on the original image, output as final result
+Step 5. Extrapolate line segments, superimpose on the original image, output as final result
 <img src="./result_images/hough_lines.jpg" width="480" />
 
 
-**Details on draw_two_lines() function**
 
-input: 
+### Details on draw_two_lines() function
+
+**input **
 
 all the output lines from hough line detection
 
-parametesr:
+**parametesr **
 
 set a min and max slope to identify outliers 
 
-Steps:
+**Steps **
 
 &nbsp;
 

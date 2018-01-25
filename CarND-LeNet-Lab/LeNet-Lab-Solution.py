@@ -182,7 +182,10 @@ def main():
 
 
     X_train, y_train, X_validation, y_validation, X_test, y_test = preprocess()
-    visualizeData(X_train, y_train)
+
+    # uncomment to visualize data
+    # visualizeData(X_train, y_train)
+
     # pipeline
     # x is a placeholder for a batch of input images.
     # y is a placeholder for a batch of output labels.
@@ -214,8 +217,10 @@ def main():
         total_accuracy = 0
         sess = tf.get_default_session()
         for offset in range(0, num_examples, BATCH_SIZE):
-            batch_x, batch_y = X_data[offset:offset + BATCH_SIZE], X_data[offset:offset + BATCH_SIZE]
+            batch_x, batch_y = X_data[offset:offset + BATCH_SIZE], y_data[offset:offset + BATCH_SIZE]
             accuracy = sess.run(accuracy_operation, feed_dict={x: batch_x, y: batch_y})
+            total_accuracy += (accuracy * len(batch_x))
+        return total_accuracy/num_examples
 
     # train the model
     # Run the training data through the training pipeline to train the model.
@@ -236,9 +241,9 @@ def main():
                 sess.run(training_operation, feed_dict={x:batch_x, y:batch_y})
 
             validation_accuracy = evaluate(X_validation, y_validation)
-        print("EPOCH {} ...".format(i + 1))
-        print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-        print()
+            print("EPOCH {} ...".format(i + 1))
+            print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+            print()
 
     saver.save(sess, './lenet')
     print("Model saved")

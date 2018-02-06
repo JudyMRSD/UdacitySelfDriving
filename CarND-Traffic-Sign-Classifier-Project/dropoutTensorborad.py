@@ -386,7 +386,7 @@ def LeNet(X_train, numClass):
 
     mu = 0
     sigma = 0.1
-    keep_prob = 0.8
+    keep_prob = 1
 
     # tf.Variable for trainable variables
     # such as weights (W) and biases (B) for your model.

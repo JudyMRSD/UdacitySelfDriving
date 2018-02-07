@@ -155,10 +155,27 @@ def trainModel():
         logits = LeNet(x, numClass)
         logits_prediction = sess.run(logits, feed_dict={x: X_test})
         predictions = np.argmax(logits_prediction, axis=1)
-    print(predictions)
-    match = (predictions==y_test)
-    print (match)
-    print(np.sum(match)/len(match))
+
+        print(predictions)
+        match = (predictions==y_test)
+        print (match)
+        print(np.sum(match)/len(match))
+
+
+
+        # output top 5 softmax probabilities
+        new_saver = tf.train.import_meta_graph('./result/model.ckpt.meta')
+        new_saver.restore(sess, tf.train.latest_checkpoint('./result/'))
+
+        x = tf.placeholder(tf.float32, (None, 32, 32, 1))
+
+        top_5 = tf.nn.top_k(logits, k=5)
+        sess.run(top_5, feed_dict={x: X_train})
+
+        for i in range (X_train.shape[0]):
+            print("image",i, "top 5: ", top_5)
+
+
 
 trainModel()
 numClass = 43

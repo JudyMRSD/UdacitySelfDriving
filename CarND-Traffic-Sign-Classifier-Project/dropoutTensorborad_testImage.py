@@ -24,7 +24,7 @@ def trainModel():
     log_dir_train = './log/train'
     log_dir_test = './log/test'
 
-    EPOCHS = 20
+    EPOCHS = 2
     BATCH_SIZE = 128
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
     numClass = len(np.unique(y_train))
@@ -102,22 +102,23 @@ def trainModel():
             print("Validation Accuracy = {:.3f}".format(validation_accuracy))
             print()
 
-        saver.save(sess, './lenet')
+        save_path = saver.save(sess, "./result/model.ckpt")
         train_writer.close()
         print("Model saved")
 
     # evaluate the model
     with tf.Session() as sess:
-        saver.restore(sess, tf.train.latest_checkpoint('.'))
+        saver.restore(sess, "./result/model.ckpt")
         test_accuracy = evaluate(X_test, y_test)
         print("Test Accuracy = {:.3f}".format(test_accuracy))
 
 # test a model on new images
 
-
-
 # load and plot images
-def testModel():
+# def testModel(numClass):
+    numClass = 43
+    tf.reset_default_graph()
+
     # load images
     path = './traffic-signs-data/googleImg/*.jpg'
     imageList = []
@@ -130,14 +131,39 @@ def testModel():
         cv2.imshow('img',img)
         cv2.waitKey(0)
     # convert to numpy list
-    X_train = np.asarray(imageList)
+    X_test = np.asarray(imageList)
     # preprocess
-    X_train = Y_channel_YUV(X_train)
-    X_train = normalize(X_train)
+    X_test = Y_channel_YUV(X_test)
+    X_test = normalize(X_test)
+    y_test = [14, 13, 34, 2, 25]
+    print(X_test.shape)#(5, 32, 32, 1)
 
 
-#trainModel()
-testModel()
+
+
+    #saver = tf.train.Saver()
+
+
+    with tf.Session() as sess:
+        # restore model
+        # saver.restore(sess, "./result/model.ckpt")
+        new_saver = tf.train.import_meta_graph('./result/model.ckpt.meta')
+        new_saver.restore(sess, tf.train.latest_checkpoint('./result/'))
+
+        # forward pass to make predictions
+        x = tf.placeholder(tf.float32, (None, 32, 32, 1))
+        logits = LeNet(x, numClass)
+        logits_prediction = sess.run(logits, feed_dict={x: X_test})
+        predictions = np.argmax(logits_prediction, axis=1)
+    print(predictions)
+    match = (predictions==y_test)
+    print (match)
+    print(np.sum(match)/len(match))
+
+trainModel()
+numClass = 43
+#testModel(43)
+
 
 
 

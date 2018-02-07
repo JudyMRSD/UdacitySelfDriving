@@ -14,7 +14,6 @@ from sklearn.utils import shuffle
 import tensorflow as tf
 from tensorflow.contrib.layers import flatten
 
-
 # load pickled data
 
 def loadData():
@@ -106,7 +105,7 @@ def visualize(X_train, y_train):
 
     fig, ax = plt.subplots(1)
     ax.imshow(X_train[imageIndex], cmap="gray")
-    x1, y1, x2, y2 = train['coords'][imageIndex]
+    x1, y1, x2, y2 = X_train['coords'][imageIndex]
 
     # Create a Rectangle patch  x y width height
     rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='r', facecolor='none')

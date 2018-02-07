@@ -1,4 +1,6 @@
 import cv2
+import glob
+from PIL import Image
 
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
@@ -110,8 +112,57 @@ def trainModel():
         test_accuracy = evaluate(X_test, y_test)
         print("Test Accuracy = {:.3f}".format(test_accuracy))
 
+# test a model on new images
 
-trainModel()
+
+
+# load and plot images
+def testModel():
+    # load images
+    path = './traffic-signs-data/googleImg/*.jpg'
+    imageList = []
+    for fileName in glob.glob(path):
+        # print(fileName)
+        img = cv2.imread(fileName, cv2.COLOR_BGR2RGB)
+        # match image size from training data
+        img = cv2.resize(img, (32, 32))
+        imageList.append(img)
+        cv2.imshow('img',img)
+        cv2.waitKey(0)
+    # convert to numpy list
+    X_train = np.asarray(imageList)
+    # preprocess
+    X_train = Y_channel_YUV(X_train)
+    X_train = normalize(X_train)
+
+
+#trainModel()
+testModel()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -21,14 +21,19 @@ class simpleNN():
            self.x= tf.placeholder(tf.float32, [None, numInputs], name = 'input')
            # one hot encoded labels
            # self.labels  [batch_size, num_classes]
+
            self.labels =  tf.placeholder(tf.float32, [None], name = 'output')
+           # model evaluation
+           print("self.labels", self.labels.shape)
            # mnist dataset already one hot encoded the labels
-           #one_hot_labels = tf.one_hot(self.labels, numClass)
+
+           one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=numClass)
            # one fullly connected layer
            self.W_fc0 = tf.Variable(tf.truncated_normal(shape = (numInputs, numClass), mean = 0, stddev = 1))
            self.b_fc0 = tf.Variable(tf.zeros(numClass))
            # [batch_size, num_classes]
            self.logits = tf.matmul(self.x, self.W_fc0) + self.b_fc0
+           # print(self.logits.shape)  # (?, 10)
            # define loss and optimizer
            # we call softmax_cross_entropy_with_logits on tf.matmul(x, W) + b),
            # because this more numerically stable function internally computes the softmax activation.
@@ -40,13 +45,13 @@ class simpleNN():
            self.loss = tf.reduce_mean(cross_entropy)
            self.opt = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
 
-            # model evaluation
-           #self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), self.labels)
+
+           #self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(one_hot_labels,1))
            #self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 def main():
     numEpochs = 10
     mainNN = simpleNN()
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+    mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
     print(mnist.train.images[0].shape)
     print(mnist.train.labels[0])
 

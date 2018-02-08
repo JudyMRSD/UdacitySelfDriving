@@ -7,6 +7,9 @@
 # Tensorboard:
 # group layers
 import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from tensorflow.examples.tutorials.mnist import input_data
 
 
 class simpleNN():
@@ -16,10 +19,11 @@ class simpleNN():
         learning_rate = 0.0001
         with tf.variable_scope('simpleNN'):
            self.x= tf.placeholder(tf.float32, [None, numInputs], name = 'input')
-           # one hot encode labels
+           # one hot encoded labels
            # self.labels  [batch_size, num_classes]
            self.labels =  tf.placeholder(tf.float32, [None], name = 'output')
-           one_hot_labels = tf.one_hot(self.labels, numClass)
+           # mnist dataset already one hot encoded the labels
+           #one_hot_labels = tf.one_hot(self.labels, numClass)
            # one fullly connected layer
            self.W_fc0 = tf.Variable(tf.truncated_normal(shape = (numInputs, numClass), mean = 0, stddev = 1))
            self.b_fc0 = tf.Variable(tf.zeros(numClass))
@@ -32,19 +36,33 @@ class simpleNN():
            # y = tf.nn.softmax(tf.matmul(x, W) + b)
            # y_ = tf.placeholder(tf.float32, [None, 10])
            # cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
-           cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self.labels,self.logits)
+           cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.labels,logits=self.logits)
            self.loss = tf.reduce_mean(cross_entropy)
            self.opt = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
 
+            # model evaluation
+           self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), self.labels)
+           self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
+def main():
+    numEpochs = 10
+    mainNN = simpleNN()
 
+    print ("starts training")
+    with tf.Session() as sess:
+        sess.run(tf.global_variable_initializer())
+        mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+        print(mnist.train.image)
+        print(mnist.train.labels)
+        #plt.imshow(mnist.train.image[0])
+        batch_x, batch_y = mnist.train.next_batch(100)
+        feed = {mainNN.x: batch_x, mainNN.labels: batch_y}
+        for ep in range(numEpochs):
+            sess.run(mainNN.opt, feed_dict = feed)
+            accuracy = sess.run(mainNN.accuracy, feed_dict=feed)
+            print(accuracy)
 
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
 
 
 

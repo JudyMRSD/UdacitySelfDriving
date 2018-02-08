@@ -41,18 +41,21 @@ class simpleNN():
            self.opt = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
 
             # model evaluation
-           self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), self.labels)
-           self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
+           #self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), self.labels)
+           #self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 def main():
     numEpochs = 10
     mainNN = simpleNN()
+    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+    print(mnist.train.images[0].shape)
+    print(mnist.train.labels[0])
 
+    '''
     print ("starts training")
     with tf.Session() as sess:
         sess.run(tf.global_variable_initializer())
-        mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-        print(mnist.train.image)
-        print(mnist.train.labels)
+
+
         #plt.imshow(mnist.train.image[0])
         batch_x, batch_y = mnist.train.next_batch(100)
         feed = {mainNN.x: batch_x, mainNN.labels: batch_y}
@@ -60,6 +63,10 @@ def main():
             sess.run(mainNN.opt, feed_dict = feed)
             accuracy = sess.run(mainNN.accuracy, feed_dict=feed)
             print(accuracy)
+
+
+    '''
+
 
 if __name__ == '__main__':
     main()

@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
 from LeNet import LeNet
+# LeNet here stands for a single layer network , not the actual lenet
 
 def run_training(num_epoch, batch_size, lr):
     mainNN = LeNet()

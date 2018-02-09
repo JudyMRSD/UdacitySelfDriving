@@ -29,7 +29,7 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, ke
             preactivate = tf.matmul(input_tensor, weights) + biases
 
         # only perform wx + b if it's the final fc layer
-        if (logitsLayer == False):
+        if (logitsLayer == True):
             logits = preactivate
             return logits
         # if it's not a final fc layer, perform activation and dropout
@@ -39,8 +39,7 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, ke
     with tf.name_scope('dropout'):
         tf.summary.scalar('dropout_keep_probability', keep_prob)
         dropped = tf.nn.dropout(activation, keep_prob)
-
-    return dropped, tf.summary.merge_all()
+    return dropped
 
 
 

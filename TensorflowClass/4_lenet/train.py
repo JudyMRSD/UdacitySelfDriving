@@ -35,6 +35,7 @@ def run_training(num_epoch, batch_size, learning_rate):
                 batch_x, batch_y = X_train[offset:end], y_train[offset:end]
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
+                #print("summary", summary)
                 train_writer.add_summary(summary, offset+num_examples*ep)
             # test on training data
             accuracy = sess.run(lenet.accuracy, feed_dict=feed)
@@ -42,7 +43,7 @@ def run_training(num_epoch, batch_size, learning_rate):
 
 
 def main():
-    num_epoch = 1
+    num_epoch = 10
     batch_size = 128
     lr = 0.5
     run_training(num_epoch, batch_size, lr)

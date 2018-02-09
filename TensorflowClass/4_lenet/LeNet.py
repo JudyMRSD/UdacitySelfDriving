@@ -43,9 +43,9 @@ class LeNet():
                 correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(one_hot_labels, 1))
                 self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             tf.summary.scalar('accuracy', self.accuracy)
-
             # merge the summaries
             self.merged = tf.summary.merge_all()
+            print("self.merged", self.merged)
 
 
 

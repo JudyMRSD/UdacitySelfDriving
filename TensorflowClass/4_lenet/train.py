@@ -34,7 +34,6 @@ def run_training(num_epoch, batch_size, learning_rate):
     with tf.Session() as sess:
 
         train_writer = tf.summary.FileWriter(log_dir + '/train', sess.graph)
-
         # initialize variables
         sess.run(tf.global_variables_initializer())
         # each epoch will shuffle the entire training data

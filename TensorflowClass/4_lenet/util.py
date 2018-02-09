@@ -40,7 +40,7 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, ke
         tf.summary.scalar('dropout_keep_probability', keep_prob)
         dropped = tf.nn.dropout(activation, keep_prob)
 
-    return dropped
+    return dropped, tf.summary.merge_all()
 
 
 

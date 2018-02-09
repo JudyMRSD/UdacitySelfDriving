@@ -20,8 +20,6 @@ def run_training(num_epoch, batch_size, learning_rate):
     y_train = mnist.train.labels
     num_examples = X_train.shape[0]
 
-
-
     print("starts training")
     with tf.Session() as sess:
         train_writer = tf.summary.FileWriter(log_dir + '/train', sess.graph)
@@ -36,10 +34,11 @@ def run_training(num_epoch, batch_size, learning_rate):
                 end = offset + batch_size
                 batch_x, batch_y = X_train[offset:end], y_train[offset:end]
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
-                _, loss = sess.run([train_step, lenet.loss], feed_dict=feed)
+                _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
+                train_writer.add_summary(summary, offset+num_examples*ep)
             # test on training data
             accuracy = sess.run(lenet.accuracy, feed_dict=feed)
-            print("loss= ", loss, "accuracy = ", accuracy)
+            print("accuracy = ", accuracy)
 
 
 def main():

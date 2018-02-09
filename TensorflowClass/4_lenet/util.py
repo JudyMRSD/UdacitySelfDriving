@@ -19,14 +19,11 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, ke
         """
     # Adding a name scope ensures logical grouping of the layers in the graph.
     with tf.name_scope(layer_name):
-        with tf.name_scope('weights'):
-            weights = tf.Variable(tf.truncated_normal(shape=(input_dim, output_dim), stddev=0.1))
-            variable_summaries(weights)
-        with tf.name_scope('biases'):
-            biases = tf.Variable(tf.zeros(output_dim))
-            variable_summaries(biases)
-        with tf.name_scope('Wx_plus_b'):
-            preactivate = tf.matmul(input_tensor, weights) + biases
+        weights = tf.Variable(tf.truncated_normal(shape=(input_dim, output_dim), stddev=0.1))
+        variable_summaries(weights)
+        biases = tf.Variable(tf.zeros(output_dim))
+        variable_summaries(biases)
+        preactivate = tf.matmul(input_tensor, weights) + biases
 
         # only perform wx + b if it's the final fc layer
         if (logitsLayer == True):
@@ -39,6 +36,7 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, ke
     with tf.name_scope('dropout'):
         tf.summary.scalar('dropout_keep_probability', keep_prob)
         dropped = tf.nn.dropout(activation, keep_prob)
+
     return dropped
 
 

@@ -25,19 +25,19 @@ class LeNet():
                 self.labels = tf.placeholder(tf.float32, [None], name='output')
                 one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=numClass)
 
-            with tf.name_scope('input_reshape'):
-                image_shaped_input = tf.reshape(self.x, [-1, 28, 28, 1])
-                tf.summary.image('input', image_shaped_input, 10)
+            #with tf.name_scope('input_reshape'):
+            #    image_shaped_input = tf.reshape(self.x, [-1, 28, 28, 1])
+            #    tf.summary.image('input', image_shaped_input, 10)
             # name scope : layer name
             # 5 lenet layers goes here
             # conv1, conv2, conv3, fc1, fc2
             # final fc layer
-            self.logits = nn_layer(self.x, numInputs, numClass, 'fc_layer')
+            self.logits = nn_layer(self.x, numInputs, numClass, 'fc_layer', logitsLayer = True)
             with tf.name_scope('loss'):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_labels,logits=self.logits)
                 self.loss = tf.reduce_mean(cross_entropy)
-            with tf.name_scope('train'):
-                train_step = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
+            #with tf.name_scope('train'):
+            #    train_step = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
             # calculate accuracy
             with tf.name_scope('accuracy'):
                 correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(one_hot_labels, 1))

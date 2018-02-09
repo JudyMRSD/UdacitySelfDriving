@@ -10,7 +10,8 @@ def run_training(num_epoch, batch_size, learning_rate):
     log_dir = './result'
     # build LeNet
     lenet = LeNet()
-    train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
+    with tf.name_scope("train"):
+        train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
 
     # loading data
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
@@ -27,7 +28,6 @@ def run_training(num_epoch, batch_size, learning_rate):
         sess.run(tf.global_variables_initializer())
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
-            batch_x, batch_y = mnist.train.next_batch(batch_size)
             X_train, y_train = shuffle(X_train, y_train)
             # train on each batch
             for offset in range(0, num_examples, batch_size):
@@ -43,7 +43,7 @@ def run_training(num_epoch, batch_size, learning_rate):
 
 
 def main():
-    num_epoch = 10
+    num_epoch = 1
     batch_size = 128
     lr = 0.5
     run_training(num_epoch, batch_size, lr)

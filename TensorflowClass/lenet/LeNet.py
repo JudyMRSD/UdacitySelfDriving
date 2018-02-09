@@ -5,14 +5,14 @@
 # MNIST
 # https://github.com/tensorflow/tensorflow/blob/r1.1/tensorflow/examples/tutorials/mnist/mnist_softmax.py
 # Tensorboard:
+#
 # group layers
+# https://github.com/tiagofrepereira2012/examples.tensorflow/blob/master/examples/tensorflow/lenet.py
+#
 import tensorflow as tf
-import matplotlib.pyplot as plt
-
-from tensorflow.examples.tutorials.mnist import input_data
 
 
-class simpleNN():
+class LeNet():
     def __init__(self):
         numInputs = 28*28
         numClass = 10
@@ -31,37 +31,9 @@ class simpleNN():
            self.loss = tf.reduce_mean(cross_entropy)
            self.opt = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
 
-           print(self.logits, one_hot_labels)
+           # calculate accuracy
            self.correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(one_hot_labels,1))
            self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
-
-def main():
-    numEpochs = 1000
-    mainNN = simpleNN()
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
-    print(mnist.train.images[0].shape)
-    print(mnist.train.labels[0])
-
-
-    print ("starts training")
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-
-
-        for ep in range(numEpochs):
-            # plt.imshow(mnist.train.image[0])
-            batch_x, batch_y = mnist.train.next_batch(100)
-            feed = {mainNN.x: batch_x, mainNN.labels: batch_y}
-            loss, opt = sess.run([mainNN.loss, mainNN.opt], feed_dict = feed)
-            if (ep%10 ==0):
-                print("loss= ",loss)
-                accuracy = sess.run(mainNN.accuracy,
-                                    feed_dict={mainNN.x: mnist.train.images, mainNN.labels: mnist.train.labels})
-                print(accuracy)
-
-
-if __name__ == '__main__':
-    main()
 
 
 

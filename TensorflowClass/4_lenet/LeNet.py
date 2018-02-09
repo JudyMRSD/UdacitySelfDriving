@@ -45,7 +45,7 @@ class LeNet():
             tf.summary.scalar('accuracy', self.accuracy)
             # merge the summaries
             self.merged = tf.summary.merge_all()
-            print("self.merged", self.merged)
+            #print("self.merged", self.merged)
 
 
 

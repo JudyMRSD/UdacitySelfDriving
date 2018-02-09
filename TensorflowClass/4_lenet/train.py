@@ -10,8 +10,14 @@ def run_training(num_epoch, batch_size, learning_rate):
     log_dir = './result'
     # build LeNet
     lenet = LeNet()
+
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
+
+    # test tensor board
+    # tf.summary.scalar('loss', lenet.loss)
+    # merged = tf.summary.merge_all()
+
 
     # loading data
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
@@ -22,8 +28,13 @@ def run_training(num_epoch, batch_size, learning_rate):
     num_examples = X_train.shape[0]
 
     print("starts training")
+
+
+
     with tf.Session() as sess:
+
         train_writer = tf.summary.FileWriter(log_dir + '/train', sess.graph)
+
         # initialize variables
         sess.run(tf.global_variables_initializer())
         # each epoch will shuffle the entire training data
@@ -35,10 +46,12 @@ def run_training(num_epoch, batch_size, learning_rate):
                 batch_x, batch_y = X_train[offset:end], y_train[offset:end]
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
-                #print("summary", summary)
+                print("summary", summary)
+
                 train_writer.add_summary(summary, offset+num_examples*ep)
             # test on training data
             accuracy = sess.run(lenet.accuracy, feed_dict=feed)
+
             print("accuracy = ", accuracy)
 
 

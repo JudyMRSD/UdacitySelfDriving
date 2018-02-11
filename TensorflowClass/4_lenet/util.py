@@ -11,7 +11,7 @@ def variable_summaries(var):
 
 # keep_prob = 1, no dropout
 # final fc layer: logitsLayer = True
-def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, keep_prob = 1, logitsLayer = False):
+def fc_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, keep_prob = 1, logitsLayer = False):
     """Reusable code for making a simple neural net layer.
         It does a matrix multiply, bias add, and then uses ReLU to nonlinearize.
         It also sets up name scoping so that the resultant graph is easy to read,

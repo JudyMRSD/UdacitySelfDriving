@@ -45,7 +45,7 @@ def run_training(num_epoch, batch_size, learning_rate):
                 batch_x, batch_y = X_train[offset:end], y_train[offset:end]
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
-                print("summary", summary)
+                # print("summary", summary)
 
                 train_writer.add_summary(summary, offset+num_examples*ep)
             # test on training data

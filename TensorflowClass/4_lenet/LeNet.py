@@ -32,7 +32,7 @@ class LeNet():
             # 5 lenet layers goes here
             # conv1, conv2, conv3, fc1, fc2
             # final fc layer
-            self.logits = nn_layer(self.x, numInputs, numClass, 'fc_layer', logitsLayer = True)
+            self.logits = fc_layer(self.x, numInputs, numClass, 'fc_layer', logitsLayer = True)
             with tf.name_scope('loss'):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_labels,logits=self.logits)
                 self.loss = tf.reduce_mean(cross_entropy)

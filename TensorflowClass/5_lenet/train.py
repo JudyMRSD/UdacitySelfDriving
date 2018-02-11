@@ -28,8 +28,6 @@ def run_training(num_epoch, batch_size, learning_rate):
 
     print("starts training")
 
-
-
     with tf.Session() as sess:
 
         train_writer = tf.summary.FileWriter(log_dir + '/train', sess.graph)
@@ -45,7 +43,6 @@ def run_training(num_epoch, batch_size, learning_rate):
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
                 # print("summary", summary)
-
                 train_writer.add_summary(summary, offset+num_examples*ep)
             # test on training data
             accuracy = sess.run(lenet.accuracy, feed_dict=feed)

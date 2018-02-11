@@ -17,12 +17,14 @@ def variable_summaries(var):
 def conv_layer(filter_side, input_tensor, out_channels, layer_name, mu = 0,
     sigma = 0.1, act=tf.nn.relu, keep_prob = 1):
     with tf.name_scope(layer_name):
-        in_channels = input_tensor.shape[3]
+        # shape[3].value gives int as output
+        in_channels = input_tensor.shape[3].value
         print("in_channels", in_channels)
         print("shape", filter_side, filter_side, in_channels, out_channels)
+        print("type", type(filter_side), type(filter_side), type(in_channels), type(out_channels))
         # define filter
         # shape [filter_height, filter_width, in_channels, out_channels]
-        conv_W = tf.Variable(tf.truncated_normal(shape=(5,5,1,6), mean = mu, stddev = sigma))
+        conv_W = tf.Variable(tf.truncated_normal(shape=(filter_side, filter_side, in_channels, out_channels), mean = mu, stddev = sigma))
         print("conv_W", conv_W)
 
         conv_b = tf.Variable(tf.zeros(out_channels))
@@ -52,7 +54,8 @@ def fc_layer(input_tensor, output_dim, layer_name, act=tf.nn.relu, keep_prob = 1
         # input_tensor.shape[0] is number of examples
         input_dim = input_tensor.shape[1]
 
-        print("input_dim", input_dim)
+        print("nput_dim, output_dim", input_dim, output_dim)
+
         weights = tf.Variable(tf.truncated_normal(shape=(input_dim, output_dim), stddev=0.1))
         variable_summaries(weights)
         biases = tf.Variable(tf.zeros(output_dim))

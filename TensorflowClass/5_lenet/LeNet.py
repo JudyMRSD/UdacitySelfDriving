@@ -22,8 +22,7 @@ class LeNet():
         learning_rate = 0.5
         with tf.name_scope('LeNet'):
             with tf.name_scope('input'):
-                self.x = tf.placeholder(tf.float32, [None, numInputs], name='input')
-                self.x = tf.reshape(self.x, shape=[-1, 28, 28, 1])
+                self.x = tf.placeholder(tf.float32, [None, 28, 28, 1], name='input')
                 self.labels = tf.placeholder(tf.float32, [None], name='output')
                 one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=numClass)
 

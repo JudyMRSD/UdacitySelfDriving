@@ -52,7 +52,7 @@ def fc_layer(input_tensor, output_dim, layer_name, act=tf.nn.relu, keep_prob = 1
     # Adding a name scope ensures logical grouping of the layers in the graph.
     with tf.name_scope(layer_name):
         # input_tensor.shape[0] is number of examples
-        input_dim = input_tensor.shape[1]
+        input_dim = input_tensor.shape[1].value
 
         print("nput_dim, output_dim", input_dim, output_dim)
 

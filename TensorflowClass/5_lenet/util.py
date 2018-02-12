@@ -24,8 +24,7 @@ def showImg(imgMat):
 # out_width  = ceil(float(in_width) / float(strides[2]))
 
 # default: keep_prob = 1 means no dropout
-def conv_layer(filter_side, input_tensor, out_channels, layer_name, mu = 0,
-    sigma = 0.1, act=tf.nn.relu, keep_prob = 1):
+def conv_layer(filter_side, input_tensor, out_channels, layer_name, mu = 0, sigma = 0.1, act=tf.nn.relu, keep_prob = 1):
     with tf.name_scope(layer_name):
         # shape[3].value gives int as output
         in_channels = input_tensor.shape[3].value

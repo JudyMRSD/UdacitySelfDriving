@@ -17,9 +17,7 @@ from tensorflow.contrib.layers import flatten
 
 class LeNet():
     def __init__(self, ):
-        numInputs = 28*28
         numClass = 10
-        learning_rate = 0.5
         with tf.name_scope('LeNet'):
             with tf.name_scope('input'):
                 self.x = tf.placeholder(tf.float32, [None, 28, 28, 1], name='input')
@@ -37,7 +35,7 @@ class LeNet():
             # Layer 1: Convolutional. Input = 32x32x1. Output = 32x32x6.
             # filter: (5, 5, 1, 6)
             conv1 = conv_layer(filter_side=5, input_tensor=self.x, out_channels=6, layer_name='conv1')
-
+            print("conv1", conv1.shape)
             # Flatten
             # Flatten the output shape of the final pooling layer such that it's 1D instead of 3D.
             f0 = flatten(conv1)

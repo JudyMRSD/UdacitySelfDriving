@@ -3,6 +3,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 from LeNet import LeNet
 from sklearn.utils import shuffle
+from util import *
 
 # LeNet here stands for a single layer network , not the actual lenet
 
@@ -36,15 +37,18 @@ def run_training(num_epoch, batch_size, learning_rate):
         sess.run(tf.global_variables_initializer())
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
-            # X_train, y_train =  shuffle(X_train, y_train)
+            X_train, y_train =  shuffle(X_train, y_train)
+            for i in range (0, 5):
+                showImg(X_train[i])
+                print("y_train[i]", y_train[i])
+
             # train on each batch
             for offset in range(0, num_examples, batch_size):
                 end = offset + batch_size
                 batch_x, batch_y = X_train[offset:end], y_train[offset:end]
 
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
-                #print("batch_x", batch_x)
-                #print("batch_y", batch_y)
+
 
                 _, summary = sess.run([train_step, lenet.merged], feed_dict=feed)
                 # print("summary", summary)

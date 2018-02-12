@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
+import time
 # intuition: each neuron should focus on different things,
 # thus the standard deviation for weights and biases should grow
 def variable_summaries(var):
@@ -8,6 +10,14 @@ def variable_summaries(var):
         with tf.name_scope('stddev'):
             stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
         tf.summary.scalar('stddev', stddev)
+
+def showImg(imgMat):
+    first_image = imgMat
+    first_image = np.array(first_image, dtype='float')
+    pixels = first_image.reshape((28, 28))
+    plt.imshow(pixels, cmap='gray')
+    plt.show()
+
 
 # convolution with padding = 'SAME'
 # out_height = ceil(float(in_height) / float(strides[1]))

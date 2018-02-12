@@ -59,7 +59,7 @@ def run_training(num_epoch, batch_size, learning_rate):
 def main():
     num_epoch = 100
     batch_size = 128
-    lr = 0.1
+    lr = 0.01
     run_training(num_epoch, batch_size, lr)
 
 

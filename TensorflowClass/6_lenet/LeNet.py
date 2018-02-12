@@ -1,4 +1,4 @@
-# Lenet
+# Lenet use gpu
 # https://github.com/tiagofrepereira2012/examples.tensorflow/blob/master/examples/tensorflow/lenet.py
 # VAE
 # https://github.com/allenovo/conditional_vae/blob/master/vae.py
@@ -47,8 +47,8 @@ class LeNet():
 
             # fc1(?, 120)
             # fc2(?, 84)
-            fc1 = fc_layer(fc0, 120, 'fc_layer', logitsLayer=True)
-            fc2 = fc_layer(fc1, 84, 'fc_layer', logitsLayer=True)
+            fc1 = fc_layer(fc0, 120, 'fc_layer')
+            fc2 = fc_layer(fc1, 84, 'fc_layer')
 
             # final fc layer
             self.logits = fc_layer(fc2, numClass, 'fc_layer', logitsLayer = True)

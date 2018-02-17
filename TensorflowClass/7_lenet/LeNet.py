@@ -16,7 +16,7 @@ from tensorflow.contrib.layers import flatten
 
 
 class LeNet():
-    def __init__(self, ):
+    def __init__(self):
         numClass = 10
         with tf.name_scope('LeNet'):
             with tf.name_scope('input'):

@@ -73,26 +73,30 @@ def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
                 saver.save(sess, model_save_dir+'/my-model', global_step=ep)
 
 def test(model_save_dir):
+
+
     # load the graph structure from the ".meta" file into the current graph.
     tf.reset_default_graph()
-    lenet = tf.train.import_meta_graph("./model/lenet5/my-model-0.meta")
-    print("tf.get_default_graph()", tf.get_default_graph())
-
+    lenet = LeNet()
+    # loading data
+    mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
+    X_test = mnist.test.images
+    X_test = np.reshape(X_test, [-1, 28, 28, 1])
+    y_test = mnist.test.labels
     # load the values of variables.
     # values only exist within a session
     # evaluate the model
     with tf.Session() as sess:
-        lenet.restore(sess, tf.train.latest_checkpoint(model_save_dir))
-        print("Model restored from file: %s" % model_save_dir)
-        # loading data
-        mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
-        X_test = mnist.test.images
-        X_test = np.reshape(X_test, [-1, 28, 28, 1])
-        y_test = mnist.test.labels
+        var_list = tf.global_variables()
+
+        saver = tf.train.Saver(var_list=var_list)
+        saver.restore(sess, tf.train.latest_checkpoint('./model/lenet5/'))
 
         feed = {lenet.x: X_test, lenet.labels: y_test}
         test_accuracy = sess.run(lenet.accuracy, feed_dict=feed)
         print("Test Accuracy = {:.3f}".format(test_accuracy))
+
+
 
 
 def main():
@@ -100,7 +104,7 @@ def main():
     batch_size = 128
     lr = 0.01
     model_save_dir = './model/lenet5'
-    run_training(num_epoch, batch_size, lr, model_save_dir)
+    # run_training(num_epoch, batch_size, lr, model_save_dir)
     test(model_save_dir)
 
 if __name__ == '__main__':

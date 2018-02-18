@@ -19,7 +19,7 @@ def prepareDataPipeline():
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
     visualize(X_train, y_train, imgPath='./writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
-    # X_train, y_train = dataAugmentation(X_train, y_train)
+    X_train, y_train = dataAugmentation(X_train, y_train)
 
     # Step 3: Data processing for tarin, validation, and test dataset
     X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
@@ -29,7 +29,10 @@ def prepareDataPipeline():
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
+def dataAugmentation(X_train, y_train):
 
+
+    return X_train, y_train
 def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
 
     num_examples = len(X_data)
@@ -67,46 +70,6 @@ def loadData():
 
 
     return X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test
-
-### Replace each question mark with the appropriate value.
-### Use python, pandas or numpy methods rather than hard coding the results
-
-def exploreDataSet(X_train, y_train):
-    X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    print("number of keys in train.p as dicitonary : ", len(X_train))
-    print("keys: ", X_train.keys())# dict_keys(['features', 'coords', 'sizes', 'labels'])
-
-    # (num examples, width, height, channels)
-    print("X_train.shape", X_train['features'].shape) # (34799, 32, 32, 3)
-    print("bounding box coord", X_train['coords'].shape) # (34799, 4)
-    # a list containing tuples, (width, height)
-    print("sizes of original image (w,h)", X_train['sizes'].shape)  # (34799, 2), num example x 2
-
-    # Number of training examples
-    # len(y_train) will give the same result
-    n_train = len(X_train)  # 34799
-
-    # Number of validation examples
-    n_validation = len(y_valid)  # 12630
-
-    # Number of testing examples.
-    n_test = len(y_test)
-
-    # X_train[0] the first training example
-    image_shape = X_train[0].shape
-    # X_train[0].shape returns a tuple
-    print("image_h = ", X_train.shape[1])
-    print("image_w = ", X_train.shape[2])
-    print("image_channel = ", X_train.shape[3])
-
-    # set(y_train): unique elements
-    n_classes = len(np.unique(y_train))
-
-    print("Number of training examples =", n_train)
-    print("Number of testing examples =", n_test)
-    print("Image data shape =", image_shape)
-    print("Number of classes =", n_classes)
-
 
 # Visualizations for distribution of data and image example for each class
 def visualize(X, y, imgPath, isGray=False):
@@ -157,91 +120,6 @@ def visualize(X, y, imgPath, isGray=False):
     plt.savefig(imgPath+'_sample')
     plt.close('all')
 
-
-
-
-def testSplitChannel():
-    # test YUV split
-    # https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_core/py_basic_ops/py_basic_ops.html
-    img = cv2.imread("test.png")
-    print("b channel")
-    b1, g, r = cv2.split(img)
-    plt.imshow(b1)
-    plt.show()
-    b2 = img[:, :, 0]
-    plt.imshow(b2)
-    plt.show()
-
-    yuv_img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
-    y, u, v = cv2.split(yuv_img)
-    print("yuv")
-    plt.imshow(yuv_img)
-    plt.show()
-
-    print("y channel")
-    print("y channel size", y.shape)
-    plt.show()
-    plt.imshow(y)
-    plt.show()
-
-    print("y channel")
-    y2 = yuv_img[:, :, 0]
-    plt.show()
-    print("y2 shape", y2.shape)
-
-    # gray
-    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    print("gray")
-    print(gray_image.shape)
-    plt.imshow(gray_image)
-    plt.show()
-
-def testNormalized():
-    X_train_coord , X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    print("X_train[0].shape",X_train[0].shape)
-
-    def normalize(X):
-        # Normalized Data  to 0 to 1  normalized = (x-min(x))/(max(x)-min(x))
-        X = (X - np.amin(X))/(np.amax(X) - np.amin(X))
-        #X = (X-128)/128
-
-        return X
-
-
-    X_train = normalize(X_train)
-
-    plt.imshow(X_train[0])
-    plt.show()
-
-# test changing image to grayscale
-def testGray():
-    X_train_coord , X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    # test change to gray scale
-    img = X_train[0,:,:,:]
-    plt.imshow(img)
-    plt.show()
-    plt.imshow(X_train[0])
-    plt.show()
-    # yuv_img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
-    #y , u, v = cv2.split(yuv_img)
-    #X[i] = y
-    #if (i<5):
-    #    plt.imshow(X[i])
-    #    plt.show()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    print(gray.shape)
-    plt.imshow(gray, cmap='gray')
-    plt.show()
-    gray = np.expand_dims(gray, axis=2)
-    print("gray.shape",gray.shape)
-
-
-    X_train[0] = gray
-
-    plt.imshow(X_train[0])
-    plt.show()
-
-
 def Y_channel_YUV(X):
     threeChannelShape = X.shape
     # shape is tuple, not mutable
@@ -268,14 +146,6 @@ def normalize(X):
     # X = (X-128)/128
 
     return X
-
-
-def oneHotLabel(y_train, y_valid, y_test):
-    numClass = len(np.unique(y_train))
-    y_train = tf.one_hot(indices=tf.cast(y_train, tf.int32), depth=numClass)
-    y_valid = tf.one_hot(indices=tf.cast(y_valid, tf.int32), depth=numClass)
-    y_test = tf.one_hot(indices=tf.cast(y_test, tf.int32), depth=numClass)
-    return y_train, y_valid, y_test
 
 
 def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):

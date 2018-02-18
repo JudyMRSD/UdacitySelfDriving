@@ -10,7 +10,7 @@ from tfUtil import *
 from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
-def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir):
+def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir, restorePath=None):
     log_dir = './result'
 
     if not os.path.exists(model_save_dir):
@@ -41,15 +41,14 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
 
 
         # restore training
-        oldModels =filter(os.path.isfile, glob.glob(model_save_dir+'*.meta'))
-        if oldModels:
+        if restorePath:
             print("restore training")
             var_list = tf.global_variables()
             saver = tf.train.Saver(var_list=var_list)
             saver.restore(sess, tf.train.latest_checkpoint(model_save_dir))
         # start a new saver
         else:
-            saver = tf.train.Saver(max_to_keep=10)
+            saver = tf.train.Saver(max_to_keep=1)
 
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
@@ -70,6 +69,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
             # test on training data
             print("loss=", loss)
 
+
             # save model
             if ep % 10 == 0:
                 # test on train
@@ -78,7 +78,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
 
                 print("accuracy = ", accuracy)
                 # Append the step number to the checkpoint name:
-                saver.save(sess, model_save_dir+'/my-model', global_step=ep)
+                saver.save(sess, model_save_dir + '/my-model', global_step=ep)
 
 def test(model_save_dir, X_test, y_test):
 
@@ -109,6 +109,7 @@ def main():
     batch_size = 128
     lr = 0.01
     model_save_dir = './model/lenet5/'
+
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 
     run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lr, model_save_dir)

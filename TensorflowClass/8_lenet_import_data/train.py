@@ -1,5 +1,7 @@
 import tensorflow as tf
 import os
+import glob
+
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 from LeNet import LeNet
@@ -8,7 +10,7 @@ from tfUtil import *
 from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
-def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_save_dir):
+def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir):
     log_dir = './result'
 
     if not os.path.exists(model_save_dir):
@@ -36,8 +38,18 @@ def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_s
         # Create a saver.
         # The tf.train.Saver must be created after the variables that you want to restore (or save).
         # Additionally it must be created in the same graph as those variables.
-        saver = tf.train.Saver(max_to_keep=10)
 
+
+        # restore training
+        oldModels =filter(os.path.isfile, glob.glob(model_save_dir+'*.meta'))
+        if oldModels:
+            print("restore training")
+            var_list = tf.global_variables()
+            saver = tf.train.Saver(var_list=var_list)
+            saver.restore(sess, tf.train.latest_checkpoint(model_save_dir))
+        # start a new saver
+        else:
+            saver = tf.train.Saver(max_to_keep=10)
 
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
@@ -52,16 +64,19 @@ def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_s
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, loss, summary = sess.run([train_step, lenet.loss, lenet.merged], feed_dict=feed)
                 # print("summary", summary)
+                # print("offset+num_examples*ep", offset+num_examples*ep)
                 train_writer.add_summary(summary, offset+num_examples*ep)
 
             # test on training data
             print("loss=", loss)
 
-            accuracy = sess.run(lenet.accuracy, feed_dict=feed)
-
-            print("accuracy = ", accuracy)
             # save model
             if ep % 10 == 0:
+                # test on train
+                feed = {lenet.x: X_valid, lenet.labels: y_valid}
+                accuracy = sess.run(lenet.accuracy, feed_dict=feed)
+
+                print("accuracy = ", accuracy)
                 # Append the step number to the checkpoint name:
                 saver.save(sess, model_save_dir+'/my-model', global_step=ep)
 
@@ -93,10 +108,10 @@ def main():
     num_epoch = 100
     batch_size = 128
     lr = 0.01
-    model_save_dir = './model/lenet5'
+    model_save_dir = './model/lenet5/'
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 
-    run_training(X_train, y_train, num_epoch, batch_size, lr, model_save_dir)
+    run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lr, model_save_dir)
     #test(X_test, y_test, model_save_dir)
 
 if __name__ == '__main__':

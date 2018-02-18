@@ -11,17 +11,12 @@ def variable_summaries(var):
             stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
         tf.summary.scalar('stddev', stddev)
 
-def showImg(imgMat):
-    first_image = imgMat
-    first_image = np.array(first_image, dtype='float')
-    pixels = first_image.reshape((28, 28))
-    plt.imshow(pixels, cmap='gray')
-    plt.show()
-
-
 # convolution with padding = 'SAME'
 # out_height = ceil(float(in_height) / float(strides[1]))
-# out_width  = ceil(float(in_width) / float(strides[2]))
+# out_width  = ceil(float(in_width) / float(strides[
+#
+#
+# ]))
 
 # default: keep_prob = 1 means no dropout
 def conv_layer(filter_side, input_tensor, out_channels, layer_name, mu = 0, sigma = 0.1, act=tf.nn.relu, keep_prob = 1):

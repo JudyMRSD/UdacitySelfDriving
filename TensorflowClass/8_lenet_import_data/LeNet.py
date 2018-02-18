@@ -17,8 +17,8 @@ from tensorflow.contrib.layers import flatten
 
 class LeNet():
     def __init__(self,
-                 img_w = 28,
-                 img_h = 28,
+                 img_w = 32,
+                 img_h = 32,
                  img_channel = 1,
                  conv1_kernel_size = 5,
                  conv1_output_channel = 6,

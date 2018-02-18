@@ -17,8 +17,8 @@ def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_s
     # build LeNet
     lenet = LeNet(img_w = 32,
                  img_h = 32,
-                 img_channel = 3,
-                  n_classes=42)
+                 img_channel = 1,
+                  n_classes=43)
 
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
@@ -41,6 +41,7 @@ def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_s
 
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
+            print("epoch: ", ep)
             X_train, y_train =  shuffle(X_train, y_train)
 
             # train on each batch
@@ -59,22 +60,21 @@ def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_s
             accuracy = sess.run(lenet.accuracy, feed_dict=feed)
 
             print("accuracy = ", accuracy)
-            # save model every other epoch
-            if ep % 1 == 0:
+            # save model
+            if ep % 10 == 0:
                 # Append the step number to the checkpoint name:
                 saver.save(sess, model_save_dir+'/my-model', global_step=ep)
 
-def test(model_save_dir):
+def test(model_save_dir, X_test, y_test):
 
 
     # load the graph structure from the ".meta" file into the current graph.
     tf.reset_default_graph()
-    lenet = LeNet()
-    # loading data
-    mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
-    X_test = mnist.test.images
-    X_test = np.reshape(X_test, [-1, 28, 28, 1])
-    y_test = mnist.test.labels
+    lenet = LeNet(img_w=32,
+                  img_h=32,
+                  img_channel=1,
+                  n_classes=43)
+
     # load the values of variables.
     # values only exist within a session
     # evaluate the model
@@ -90,14 +90,14 @@ def test(model_save_dir):
 
 
 def main():
-    num_epoch = 2
+    num_epoch = 100
     batch_size = 128
     lr = 0.01
     model_save_dir = './model/lenet5'
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 
     run_training(X_train, y_train, num_epoch, batch_size, lr, model_save_dir)
-    # test(model_save_dir)
+    #test(X_test, y_test, model_save_dir)
 
 if __name__ == '__main__':
     main()

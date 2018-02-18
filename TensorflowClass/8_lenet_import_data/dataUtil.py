@@ -17,14 +17,15 @@ def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    visualize(X_train, y_train)
+    visualize(X_train, y_train, imgPath='./writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
     # X_train, y_train = dataAugmentation(X_train, y_train)
 
     # Step 3: Data processing for tarin, validation, and test dataset
-    #X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
+    X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
-    # visualizeAugmented(X_train, y_train, X_train_coord)
+
+    visualize(X_train, y_train, imgPath='./writeup/visualizeData-ychannel', isGray=True)
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
@@ -107,8 +108,8 @@ def exploreDataSet(X_train, y_train):
     print("Number of classes =", n_classes)
 
 
-# Visualizations will be shown in the notebook.
-def visualize(X_train, y_train):
+# Visualizations for distribution of data and image example for each class
+def visualize(X, y, imgPath, isGray=False):
 
     # classes is the ordered unique classes
 
@@ -118,7 +119,7 @@ def visualize(X_train, y_train):
 
     # counts: the number of times each unique sign appears
 
-    classes, indices, counts = np.unique(y_train, return_index=True, return_counts=True)
+    classes, indices, counts = np.unique(y, return_index=True, return_counts=True)
     print("list of classes", classes)  # [0,...42]
     num_classes = len(classes)
     print("number of classes", num_classes)  # 43
@@ -126,69 +127,37 @@ def visualize(X_train, y_train):
     # plotting the count of each sign
     # historgram bins arranged by classes
     print("historgram bins arranged by classes ")
-    plt.hist(y_train, classes)
+
+
+    plt.hist(y, classes)
 
     plt.title("Training Data Histogram")
     plt.xlabel("Class")
     plt.ylabel("Occurence")
-    plt.savefig('./writeup/trainHistogram.jpg')
+    plt.savefig(imgPath+'_histogram.jpg')
     #plt.show()
 
     # unique_images are the first occurence of traffic signs in the data set
-    unique_images = X_train[indices]
+    unique_images = X[indices]
     print("num unique images : ", len(unique_images))
+
 
     fig = plt.figure()
     for i in range(num_classes):
         ax = fig.add_subplot(5, 9, i + 1, xticks=[], yticks=[])
         ax.set_title(i)
-        ax.imshow(unique_images[i])
+        if (isGray == True):
+            ax.imshow(np.squeeze(unique_images[i]), cmap='gray')
 
-    plt.savefig('./writeup/visualizeData.jpg')
-    # uncomment to visualize dataset
-    # visualize(X_train, y_train)
-
-
-def visualizeAugmented(X_train, y_train, X_coord):
-    # plotting the count of each sign
+        else:
+            ax.imshow(unique_images[i])
 
 
 
-    # bounding box
-    imageIndex = 100
-    print("single image shape", X_train[imageIndex].shape)
+    plt.savefig(imgPath+'_sample')
+    plt.close('all')
 
-    fig, ax = plt.subplots(1)
-    ax.imshow(np.squeeze(X_train[imageIndex]), cmap='gray')
-    x1, y1, x2, y2 = X_coord[imageIndex]
 
-    # Create a Rectangle patch  x y width height
-    rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='r', facecolor='none')
-
-    # Add the patch to the Axes
-    ax.add_patch(rect)
-
-    plt.show()
-
-    classes, indices, counts = np.unique(y_train, return_index=True, return_counts=True)
-    print("list of classes", classes)  # [0,...42]
-    num_classes = len(classes)
-    print("number of classes", num_classes)  # 43
-
-    # historgram bins arranged by classes
-    print("historgram bins arranged by classes ")
-    plt.hist(y_train, classes)
-    plt.show()
-
-    # unique_images are the first occurence of traffic signs in the data set
-    unique_images = X_train[indices]
-    print("num unique images : ", len(unique_images))
-
-    fig = plt.figure(figsize=(20, 5))
-    for i in range(num_classes):
-        ax = fig.add_subplot(5, 9, i + 1, xticks=[], yticks=[])
-        ax.imshow(np.squeeze(unique_images[i]), cmap='gray')
-    plt.show()
 
 
 def testSplitChannel():
@@ -312,9 +281,9 @@ def oneHotLabel(y_train, y_valid, y_test):
 def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
     # Y channel
     X_train = Y_channel_YUV(X_train)
-
     X_valid = Y_channel_YUV(X_valid)
     X_test = Y_channel_YUV(X_test)
+
     # normalize gray images
     X_train = normalize(X_train)
     X_valid = normalize(X_valid)

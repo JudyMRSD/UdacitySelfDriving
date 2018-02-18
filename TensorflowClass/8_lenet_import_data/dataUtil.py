@@ -10,16 +10,18 @@ import matplotlib.patches as patches
 from sklearn.utils import shuffle
 import tensorflow as tf
 from tensorflow.contrib.layers import flatten
-
+from keras.preprocessing.image import ImageDataGenerator
+from collections import defaultdict
 
 
 def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    visualize(X_train, y_train, imgPath='./writeup/visualizeData')
+    #visualize(X_train, y_train, imgPath='./writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
     X_train, y_train = dataAugmentation(X_train, y_train)
+    visualize(X_train, y_train, imgPath='./writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
     X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
@@ -29,10 +31,8 @@ def prepareDataPipeline():
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
-def dataAugmentation(X_train, y_train):
 
 
-    return X_train, y_train
 def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
 
     num_examples = len(X_data)
@@ -119,6 +119,88 @@ def visualize(X, y, imgPath, isGray=False):
 
     plt.savefig(imgPath+'_sample')
     plt.close('all')
+# opencv documentation
+# https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_geometric_transformations/py_geometric_transformations.html
+# adapted idea from:
+# https://github.com/carlosgalvezp/Udacity-Self-Driving-Car-Nanodegree/blob/master/term1/projects/p2-traffic-signs/Traffic_Signs_Recognition.ipynb
+def traslation(src, width_shift_range = 0.1, height_shift_range = 0.1):
+    height = src.shape[0]
+    width = src.shape[1]
+    tx = np.random.uniform(-width*width_shift_range, width*width_shift_range)
+    ty = np.random.uniform(-height*height_shift_range, height*height_shift_range)
+    M = np.array([[1, 0, tx], [0, 1, ty]], dtype = np.float32)
+    dst = cv2.warpAffine(src, M, (width, height))
+    return dst
+
+def rotation(src, rotation_rage = 15):
+    height = src.shape[0]
+    width = src.shape[1]
+    theta = np.random.uniform(-rotation_rage, rotation_rage)
+    M = cv2.getRotationMatrix2D((width / 2, height / 2), theta, 1)
+    dst = cv2.warpAffine(src, M, (width, height))
+    return dst
+
+def scale(src, zoom_range= 0.2):
+    height = src.shape[0]
+    width = src.shape[1]
+    x_scale = np.random.uniform(-zoom_range, zoom_range) + 1
+    y_scale = np.random.uniform(-zoom_range, zoom_range) + 1
+    M = np.array([[x_scale, 0, 0],[0, y_scale, 0]])
+    dst = cv2.warpAffine(src, M, (width, height))
+
+    return dst
+
+def randomTransform(src,
+                    width_shift_range=0.1, height_shift_range=0.1,
+                    rotation_rage = 15,
+                    zoom_range = 0.2):
+    transformId = np.random.randint(0,3)
+    if transformId == 0:
+        dst = traslation(src, width_shift_range, height_shift_range)
+        cv2.imshow("scale", dst)
+    elif transformId == 1:
+        dst = rotation(src, rotation_rage)
+        cv2.imshow("rotate", dst)
+    elif transformId == 2:
+        dst = scale(src, zoom_range)
+        cv2.imshow("zoom", dst)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return dst
+
+
+def dataAugmentation(X_train, y_train, factor = 10):
+    # count frequency of each class
+    freq = defaultdict(int)
+    for c in y_train:
+        freq[c] += 1
+
+    # target count per class
+    final_count = y_train.shape[0] * factor
+    numClass = len(freq)
+    count_per_class = final_count/numClass
+    # number of fake data per old image for each class
+    fake_freq = defaultdict(int)
+    # e.g.   old distribution  70  vs 30
+    # target   200  vs 200
+    # new data needed to balance:
+    # (200 - 70) /70 = ceil(140 / 70) = 2
+    # (200 - 30) /70 = ceil(170 / 30) = 6
+    for k,v in freq.items():
+        fake_freq[k] = int(np.ceil( ( count_per_class - v)/v))
+
+    # balance data distribution
+    for i in range (y_train.shape[0]):
+        # number of images needed to blalance distribution among classes
+        n_augment = fake_freq[ y_train[i] ]
+        # create agumented images
+        for j in range (n_augment):
+            newImg = randomTransform(X_train[i])
+            np.append(X_train, newImg)
+            np.append(y_train, y_train[i])
+    return X_train, y_train
+
 
 def Y_channel_YUV(X):
     threeChannelShape = X.shape

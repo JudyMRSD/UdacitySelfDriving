@@ -21,9 +21,16 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='./writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
     X_train_new, y_train_new = dataAugmentation(X_train, y_train)
-
+    print("before augment: number of training data  = ", X_train.shape[0])
     X_train = np.concatenate((X_train, X_train_new), axis=0)
     y_train = np.concatenate((y_train, y_train_new), axis=0)
+
+    freq_new = defaultdict(int)
+    for c in y_train_new:
+        freq_new[c] += 1
+
+
+    print("after augment: number of training data  = ",X_train.shape[0])
     visualize(X_train, y_train, imgPath='./writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
@@ -31,6 +38,8 @@ def prepareDataPipeline():
     # Step 4: visualize preprocessed data
 
     visualize(X_train, y_train, imgPath='./writeup/visualizeData-ychannel', isGray=True)
+
+
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
@@ -76,7 +85,12 @@ def loadData():
 
 # Visualizations for distribution of data and image example for each class
 def visualize(X, y, imgPath, isGray=False):
+    freq_all = defaultdict(int)
+    for c in y:
+        freq_all[c] += 1
 
+
+    plt.close('all')
     # classes is the ordered unique classes
 
     # indices:  indices of input array that result in the unique array classes
@@ -95,7 +109,8 @@ def visualize(X, y, imgPath, isGray=False):
     print("historgram bins arranged by classes ")
 
 
-    plt.hist(y, classes)
+    numBins = int(classes.shape[0])
+    plt.hist(y,bins=numBins)
 
     plt.title("Training Data Histogram")
     plt.xlabel("Class")
@@ -179,8 +194,11 @@ def dataAugmentation(X_train, y_train, factor = 2):
         freq[c] += 1
 
     # target count per class
-    final_count = y_train.shape[0] * factor
+    originalNumImg = y_train.shape[0]
     numClass = len(freq)
+
+    final_count = originalNumImg * factor
+
     count_per_class = final_count/numClass
     # number of fake data per old image for each class
     fake_freq = defaultdict(int)
@@ -188,10 +206,13 @@ def dataAugmentation(X_train, y_train, factor = 2):
     # target   200  vs 200
     # new data needed to balance:
     # (200 - 70) /70 = ceil(140 / 70) = 2
-    # (200 - 30) /70 = ceil(170 / 30) = 6
+    # (200 - 30) /30 = ceil(170 / 30) = 6
+
+    # (count_per_class - old_count_of_the_class) / old_count_of_the_class
     for k,v in freq.items():
         fake_freq[k] = int(np.ceil( ( count_per_class - v)/v))
-    originalNumImg = y_train.shape[0]
+
+
     X_train_new = []
     y_train_new = []
     # balance data distribution
@@ -204,11 +225,14 @@ def dataAugmentation(X_train, y_train, factor = 2):
             X_train_new.append(newImg)
             y_train_new.append(y_train[i])
         # visualize the first augmentation
-        if (i==1):
+        if (i==0):
             visualize_single_augment(X_train_new)
 
     X_train_new = np.array(X_train_new)
     y_train_new = np.array(y_train_new)
+    print(y_train_new.shape[0])
+
+
 
     return X_train_new, y_train_new
 

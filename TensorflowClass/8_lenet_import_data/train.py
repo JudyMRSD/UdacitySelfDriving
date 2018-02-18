@@ -8,7 +8,7 @@ from tfUtil import *
 from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
-def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
+def run_training(X_train, y_train, num_epoch, batch_size, learning_rate, model_save_dir):
     log_dir = './result'
 
     if not os.path.exists(model_save_dir):
@@ -20,17 +20,6 @@ def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
 
-    # test tensor board
-    # tf.summary.scalar('loss', lenet.loss)
-    # merged = tf.summary.merge_all()
-
-    # loading data
-    mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
-
-
-    X_train = mnist.train.images
-    X_train = np.reshape(X_train, [-1,28,28,1])
-    y_train = mnist.train.labels
     num_examples = X_train.shape[0]
 
     print("starts training")
@@ -102,9 +91,9 @@ def main():
     batch_size = 128
     lr = 0.01
     model_save_dir = './model/lenet5'
-    prepareDataPipeline()
+    X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 
-    # run_training(num_epoch, batch_size, lr, model_save_dir)
+    run_training(X_train, y_train, num_epoch, batch_size, lr, model_save_dir)
     # test(model_save_dir)
 
 if __name__ == '__main__':

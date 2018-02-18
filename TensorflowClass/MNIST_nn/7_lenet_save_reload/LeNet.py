@@ -16,25 +16,41 @@ from tensorflow.contrib.layers import flatten
 
 
 class LeNet():
-    def __init__(self):
+    def __init__(self,
+                 img_w = 28,
+                 img_h = 28,
+                 img_channel = 1,
+                 conv1_kernel_size = 5,
+                 conv1_output_channel = 6,
+
+                 conv2_kernel_size = 5,
+                 conv2_output_channel = 16,
+
+                 conv3_kernel_size=5,
+                 conv3_output_channel=16,
+
+                 fc1_out = 120,
+                 fc2_out = 84,
+
+                 n_classes = 10):
         numClass = 10
         with tf.name_scope('LeNet'):
             with tf.name_scope('input'):
-                self.x = tf.placeholder(tf.float32, [None, 28, 28, 1], name='input')
+                self.x = tf.placeholder(tf.float32, [None, img_w, img_h, img_channel], name='input')
                 self.labels = tf.placeholder(tf.float32, [None], name='output')
                 one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=numClass)
             # convolution, relu:  conv1 (?, 32, 32, 6)
             # max pool:  conv1 (?, 16, 16, 6)
-            conv1 = conv_layer(filter_side=5, input_tensor=self.x, out_channels=6, layer_name='conv1')
+            conv1 = conv_layer(filter_side=conv1_kernel_size, input_tensor=self.x, out_channels=conv1_output_channel, layer_name='conv1')
             print("conv1", conv1.shape)
             # convolution, relu:  conv2(?, 16, 16, 16)
             # max pool: conv2(?, 8, 8, 16)
-            conv2 = conv_layer(filter_side=5, input_tensor=conv1, out_channels=16, layer_name='conv2')
+            conv2 = conv_layer(filter_side=conv2_kernel_size, input_tensor=conv1, out_channels=conv2_output_channel, layer_name='conv2')
             print("conv2", conv2.shape)
             # conv3 (?, 8, 8, 16)
             # conv3 (?, 4, 4, 16)
 
-            conv3 = conv_layer(filter_side=5, input_tensor=conv2, out_channels=16, layer_name='conv3')
+            conv3 = conv_layer(filter_side=conv3_kernel_size, input_tensor=conv2, out_channels=conv3_output_channel, layer_name='conv3')
             print("conv3", conv3.shape)
 
             # convolution, relu:  conv3(?, 8, 8, 16)
@@ -47,8 +63,8 @@ class LeNet():
 
             # fc1(?, 120)
             # fc2(?, 84)
-            fc1 = fc_layer(fc0, 120, 'fc_layer')
-            fc2 = fc_layer(fc1, 84, 'fc_layer')
+            fc1 = fc_layer(fc0, fc1_out, 'fc_layer')
+            fc2 = fc_layer(fc1, fc2_out, 'fc_layer')
 
             # final fc layer
             self.logits = fc_layer(fc2, numClass, 'fc_layer', logitsLayer = True)

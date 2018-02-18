@@ -33,12 +33,12 @@ class LeNet():
                  fc2_out = 84,
 
                  n_classes = 10):
-        numClass = 10
+
         with tf.name_scope('LeNet'):
             with tf.name_scope('input'):
                 self.x = tf.placeholder(tf.float32, [None, img_w, img_h, img_channel], name='input')
                 self.labels = tf.placeholder(tf.float32, [None], name='output')
-                one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=numClass)
+                one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=n_classes)
             # convolution, relu:  conv1 (?, 32, 32, 6)
             # max pool:  conv1 (?, 16, 16, 6)
             conv1 = conv_layer(filter_side=conv1_kernel_size, input_tensor=self.x, out_channels=conv1_output_channel, layer_name='conv1')
@@ -67,7 +67,7 @@ class LeNet():
             fc2 = fc_layer(fc1, fc2_out, 'fc_layer')
 
             # final fc layer
-            self.logits = fc_layer(fc2, numClass, 'fc_layer', logitsLayer = True)
+            self.logits = fc_layer(fc2, n_classes, 'fc_layer', logitsLayer = True)
             with tf.name_scope('loss'):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_labels,logits=self.logits)
                 self.loss = tf.reduce_mean(cross_entropy)

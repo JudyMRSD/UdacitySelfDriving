@@ -19,7 +19,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
     # build LeNet
     lenet = LeNet(img_w = 32,
                  img_h = 32,
-                 img_channel = 1,
+                 img_channel = 3,
                  n_classes=43)
 
     with tf.name_scope("train"):
@@ -107,7 +107,7 @@ def test(model_save_dir, X_test, y_test):
 
 
 def main():
-    num_epoch = 312
+    num_epoch = 32
     batch_size = 128
     lr = 0.01
     model_save_dir = '../model/lenet5/'

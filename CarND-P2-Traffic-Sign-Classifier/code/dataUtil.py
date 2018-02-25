@@ -14,7 +14,7 @@ def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    #X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
+    X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
     #visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     
     # Step 2: Use data agumentation to make more training data
@@ -27,7 +27,7 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
-    X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
+    #   X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
     visualize(X_train, y_train, imgPath='../writeup/visualizeData-ychannel', isGray=True)
@@ -40,7 +40,7 @@ def prepareDataPipeline():
 def normalizeImg(X_data):
     # scale features to be in [0, 1]
     X_data = X_data.astype(np.float32)
-    X_data = (X_data / 255.).astype(np.float32)
+    X_data = (X_data / 255. - 0.5).astype(np.float32)
     '''
     numExample = X_data.shape[0]
     # adapted from https://navoshta.com/traffic-signs-classification/
@@ -291,6 +291,7 @@ def normalize(X):
 
 
 def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
+     
     # Y channel
     X_train = Y_channel_YUV(X_train)
     X_valid = Y_channel_YUV(X_valid)
@@ -302,6 +303,7 @@ def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
     X_test = normalize(X_test)
     # one hot encoding labels
     # y_train, y_valid, y_test = oneHotLabel(y_train, y_valid, y_test)
+        
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 

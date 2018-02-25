@@ -20,7 +20,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
     lenet = LeNet(img_w = 32,
                  img_h = 32,
                  img_channel = 3,
-                  n_classes=43)
+                 n_classes=43)
 
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)

@@ -11,7 +11,7 @@ from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
 def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir, restorePath=None):
-    log_dir = './result'
+    log_dir = '../result'
 
     if not os.path.exists(model_save_dir):
         os.makedirs(model_save_dir)
@@ -19,7 +19,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
     # build LeNet
     lenet = LeNet(img_w = 32,
                  img_h = 32,
-                 img_channel = 3,
+                 img_channel = 1,
                  n_classes=43)
 
     with tf.name_scope("train"):
@@ -52,7 +52,7 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
 
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
-            print("epoch: ", ep)
+            #print("epoch: ", ep)
             X_train, y_train =  shuffle(X_train, y_train)
 
             # train on each batch
@@ -67,11 +67,13 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
                 train_writer.add_summary(summary, offset+num_examples*ep)
 
             # test on training data
-            print("loss=", loss)
+            # print("loss=", loss)
 
 
             # save model
             if ep % 10 == 0:
+                print("epoch: ", ep)
+                print("loss=", loss)
                 # test on validation set
                 feed = {lenet.x: X_valid, lenet.labels: y_valid}
                 accuracy = sess.run(lenet.accuracy, feed_dict=feed)
@@ -97,7 +99,7 @@ def test(model_save_dir, X_test, y_test):
         var_list = tf.global_variables()
 
         saver = tf.train.Saver(var_list=var_list)
-        saver.restore(sess, tf.train.latest_checkpoint('./model/lenet5/'))
+        saver.restore(sess, tf.train.latest_checkpoint('../model/lenet5/'))
 
         feed = {lenet.x: X_test, lenet.labels: y_test}
         test_accuracy = sess.run(lenet.accuracy, feed_dict=feed)
@@ -105,10 +107,10 @@ def test(model_save_dir, X_test, y_test):
 
 
 def main():
-    num_epoch = 22
+    num_epoch = 312
     batch_size = 128
     lr = 0.01
-    model_save_dir = './model/lenet5/'
+    model_save_dir = '../model/lenet5/'
 
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 

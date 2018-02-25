@@ -1,6 +1,9 @@
 import tensorflow as tf
 import numpy as np
+
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
+
 import time
 # intuition: each neuron should focus on different things,
 # thus the standard deviation for weights and biases should grow

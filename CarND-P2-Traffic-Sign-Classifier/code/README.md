@@ -1,87 +1,26 @@
-# **Finding Lane Lines on the Road** 
-
----
-#Finding Lane Lines on the Road
-
-This is the first project from Udacity Self-driving Car Nanodegree.
-
-Goal
-----
-Detect lane lines.
-Input: video from camera mounted on top of a car 
-Output: annotated video 
-Tools: color selection, region of interest selection, grayscaling, Gaussian smoothing, Canny Edge Detection and Hough Tranform line detection
+# **Traffic Sign Classifier** 
 
 Files
 -----
-P1.ipynb  : implementation
+# LeNet.py:
 
-Instruction
-----------
-source activate carnd-term1
-jupyter notebook
+LeNet class defines the graph for a modified LeNet structure: <br/>
+conv1 with relu: output (?, 32, 32, 6)    max pool:  (?, 16, 16, 6) <br/>
+conv2 with relu: output (?, 16, 16, 16)   max pool:  (?, 8, 8, 16) <br/> 
+conv3 with relu: output  (?, 8, 8, 16)    max pool:  (?, 4, 4, 16) <br/>
+fc0 is the conv3 output flattened to (?, 256) <br/>
+fc1   (?, 120)  <br/>
+fc2   (?, 84)  <br/>
+logits (?, num class)  <br/>
+Cross entropy loss was used here.  <br/>
 
-
-
-### Pipeline
-
-
-**Finding Lane Lines on the Road**
-
-Summary of my implementation:
-
-Step 1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
-<img src="./result_images/gray_scale.jpg" width="480" /> <br />
-
-Step 2. Canny edge <br />
-<img src="./result_images/canny_edge.jpg" width="480" />
-
-Step 3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked
-<img src="./result_images/region_mask.jpg" width="480" />
-
-Step 4. Hough transform to detect lines in an image, input : img_edges_masked, output: img_lines
-<img src="./result_images/hough_all_lines.jpg" width="480" />
-
-Step 5. Extrapolate line segments, superimpose on the original image, output as final result
-<img src="./result_images/hough_lines.jpg" width="480" />
+# tfUtil.py
+Helper functions to build the graph in LeNet.py that's friendly to display graph and write summary for variables on tensorboard.  <br/>
+conv-layer function creates a convolution layer with activation, maxpool and option for dropout. <br/>
+fc-layer function creates an fc layer with activation if it's a hidden layer, without activaation if it's a logits layer.  <br/>
 
 
-
-### Details on draw_two_lines() function
-
-**Input**
-
-all the output lines from hough line detection
-
-**Parametesr**
-
-set a min and max slope to identify outliers 
-
-**Steps**
-
-&nbsp;
-
-    loop through all the lines 
-    
-        Positive slopes belong to left lines, negative slope belong to right lines.
-
-        Find slope (m) and bias (b) for each line
-    
-        if the line is not an outlier:
-    
-            store the line parameters (m, b) in the left line or right line parameter array 
-        
-    find the mean value for m, b for left and right lines 
-
-    Use mean m, b values to find the two end points for each of the left line and right line
+# testTF.py
+Please ignore this file, used for testing tensorflow functions. 
 
 
-
-### 2. Identify potential shortcomings with your current pipeline
-
-One shortcoming is that it fails for the challenging case, where the lane lines are curved.  
-The current hough line function only find staight edges and extrapolate it. 
-
-### 3. Suggest possible improvements to your pipeline
-
-There are two many hand tuned parameters, such as the ones for region of interest masking, Canny edge detector, and hough line detection. This make the pipeline not robust. A potential improvement is to use machine learning to learn these parameters.

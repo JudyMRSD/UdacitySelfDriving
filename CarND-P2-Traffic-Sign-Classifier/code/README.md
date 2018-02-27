@@ -1,17 +1,17 @@
 # **Traffic Sign Classifier Pipeline** 
 -----
 # train.py:
-## main():
+### main():
 step0: define hyper parameters, learning rate = 0.01  <br/>
 step1: call prepareDataPipeline to get preprocessed data.  <br/>
 step2: call run-training on training dataset, and printout accuracy on validation dataset  <br/>
 
 
-## run-training: 
+### run-training: 
 Use LeNet, inputs are 32x32x3 RGB images , gradient descent is done using Adam optimizer <br/>
 During traning, use validation set every 10 episode to check the accracy.<br/>
 
-## test: 
+### test: 
 load saved model and test on test data set  <br/>
 Please ignore this function for now, since it's not used during training. <br/>
 

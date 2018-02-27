@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 import tensorflow as tf
-
+from pathlib import Path
 from collections import defaultdict
 
 
@@ -14,7 +14,7 @@ def prepareDataPipeline():
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
     X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
-    visualize(X_train, y_train, imgPath='./writeup/visualizeData')
+    visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
     #X_train_new, y_train_new = dataAugmentation(X_train, y_train)
     #print("before augment: number of training data  = ", X_train.shape[0])
@@ -22,13 +22,13 @@ def prepareDataPipeline():
     #y_train = np.concatenate((y_train, y_train_new), axis=0)
 
     print("after augment: number of training data  = ",X_train.shape[0])
-    visualize(X_train, y_train, imgPath='./writeup/visualizeAugment')
+    visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
     # X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
-    visualize(X_train, y_train, imgPath='./writeup/visualizeData-ychannel', isGray=True)
+    visualize(X_train, y_train, imgPath='../writeup/visualizeData-ychannel', isGray=True)
 
 
 
@@ -73,10 +73,13 @@ def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
 # load pickled data
 
 def loadData():
-    data_folder = "./traffic-signs-data/"
+    data_folder = "../traffic-signs-data/"
+
+
     training_file = data_folder + "train.p"
     validation_file = data_folder + "valid.p"
     testing_file = data_folder + "test.p"
+
 
     with open(training_file, mode='rb') as f:
         train = pickle.load(f)
@@ -256,7 +259,7 @@ def visualize_single_augment(X_new):
         ax.set_title(i)
         ax.imshow(np.squeeze(X_new[i]), cmap='gray')
 
-    plt.savefig('./writeup/visualizeAugment_singleImg.jpg')
+    plt.savefig('../writeup/visualizeAugment_singleImg.jpg')
     plt.close('all')
 
 

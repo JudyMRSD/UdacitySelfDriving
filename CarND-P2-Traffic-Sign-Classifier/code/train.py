@@ -11,7 +11,7 @@ from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
 def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir, restorePath=None):
-    log_dir = './result'
+    log_dir = '../result'
 
     if not os.path.exists(model_save_dir):
         os.makedirs(model_save_dir)
@@ -97,7 +97,7 @@ def test(model_save_dir, X_test, y_test):
         var_list = tf.global_variables()
 
         saver = tf.train.Saver(var_list=var_list)
-        saver.restore(sess, tf.train.latest_checkpoint('./model/lenet5/'))
+        saver.restore(sess, tf.train.latest_checkpoint('../model/lenet5/'))
 
         feed = {lenet.x: X_test, lenet.labels: y_test}
         test_accuracy = sess.run(lenet.accuracy, feed_dict=feed)
@@ -108,7 +108,8 @@ def main():
     num_epoch = 22
     batch_size = 128
     lr = 0.01
-    model_save_dir = './model/lenet5/'
+    model_save_dir = '../model/lenet5/'
+
 
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
 

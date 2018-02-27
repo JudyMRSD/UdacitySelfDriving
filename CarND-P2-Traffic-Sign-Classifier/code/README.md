@@ -46,4 +46,8 @@ testTF: test one hot encoding in tensorflow.   <br/>
 # testTF.py
 Please ignore this file, used for testing tensorflow functions. 
 
+# Testing results:
+1. Original setting , classic Lenet with 2 conv layers, 2 fc layers, Y channel from YUV image, normalize using X = (X - np.amin(X)) / (np.amax(X) - np.amin(X)), the accuracy is 88% after 20 epochs
+
+2. If I use RGB (3 channels), normalize using (X_data / 255. - 0.5).astype(np.float32), 3 conv layers, 2 fc layer, I get accuracy 0.846 at 20 epochs, and 0.83582765 at 30 epochs
 

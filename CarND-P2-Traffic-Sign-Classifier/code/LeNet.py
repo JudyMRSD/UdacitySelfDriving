@@ -53,8 +53,8 @@ class LeNet():
             # conv3 (?, 8, 8, 16)
             # conv3 (?, 4, 4, 16)
 
-            #conv3 = conv_layer(filter_side=conv3_kernel_size, input_tensor=conv2, out_channels=conv3_output_channel, layer_name='conv3')
-            #print("conv3", conv3.shape)
+            conv3 = conv_layer(filter_side=conv3_kernel_size, input_tensor=conv2, out_channels=conv3_output_channel, layer_name='conv3')
+            print("conv3", conv3.shape)
 
             # convolution, relu:  conv3(?, 8, 8, 16)
             # max pool: conv3(?, 4, 4, 16)
@@ -62,7 +62,7 @@ class LeNet():
             # Flatten
             # Flatten the output shape of the final pooling layer such that it's 1D instead of 3D.
             # fc0 (?, 256)
-            fc0 = flatten(conv2)
+            fc0 = flatten(conv3)
 
             # fc1(?, 120)
             # fc2(?, 84)
@@ -85,9 +85,6 @@ class LeNet():
             # merge the summaries
             self.merged = tf.summary.merge_all()
             #print("self.merged", self.merged)
-
-
-
 
 
 

@@ -1,87 +1,53 @@
-# **Finding Lane Lines on the Road** 
-
----
-#Finding Lane Lines on the Road
-
-This is the first project from Udacity Self-driving Car Nanodegree.
-
-Goal
-----
-Detect lane lines.
-Input: video from camera mounted on top of a car 
-Output: annotated video 
-Tools: color selection, region of interest selection, grayscaling, Gaussian smoothing, Canny Edge Detection and Hough Tranform line detection
-
-Files
+# **Traffic Sign Classifier Pipeline** 
 -----
-P1.ipynb  : implementation
-
-Instruction
-----------
-source activate carnd-term1
-jupyter notebook
-
+# train.py:
+### main():
+step0: define hyper parameters, learning rate = 0.01  <br/>
+step1: call prepareDataPipeline to get preprocessed data.  <br/>
+step2: call run-training on training dataset, and printout accuracy on validation dataset  <br/>
 
 
-### Pipeline
+### run-training: 
+Use LeNet, inputs are 32x32x3 RGB images , gradient descent is done using Adam optimizer <br/>
+During traning, use validation set every 10 episode to check the accracy.<br/>
+
+### test: 
+load saved model and test on test data set  <br/>
+Please ignore this function for now, since it's not used during training. <br/>
 
 
-**Finding Lane Lines on the Road**
+# LeNet.py:
 
-Summary of my implementation:
+LeNet class defines the graph for a modified LeNet structure: <br/>
+conv1 with relu: output (?, 32, 32, 6)    max pool:  (?, 16, 16, 6) <br/>
+conv2 with relu: output (?, 16, 16, 16)   max pool:  (?, 8, 8, 16) <br/> 
+conv3 with relu: output  (?, 8, 8, 16)    max pool:  (?, 4, 4, 16) <br/>
+fc0 is the conv3 output flattened to (?, 256) <br/>
+fc1   (?, 120)  <br/>
+fc2   (?, 84)  <br/>
+logits (?, num class)  <br/>
+Cross entropy loss was used here.  <br/>
 
-Step 1.RGB to grayscale, apply Gaussian smoothing to remove noise and easier to find edge: ouput img_blur
-<img src="./result_images/gray_scale.jpg" width="480" /> <br />
+# tfUtil.py
+Helper functions to build the graph in LeNet.py that's friendly to display graph and write summary for variables on tensorboard.  <br/>
+conv-layer function creates a convolution layer with activation, maxpool and option for dropout. <br/>
+fc-layer function creates an fc layer with activation if it's a hidden layer, without activaation if it's a logits layer.  <br/>
 
-Step 2. Canny edge <br />
-<img src="./result_images/canny_edge.jpg" width="480" />
+# dataUtil.py:
+prepareDataPipeline loads the data and normalize the images. <br/>
+normalizeAll normalizes images in test, train, and validation sets using X_data / 255. - 0.5   <br/>
 
-Step 3.Use cv2.fillPoly to ignore everything outside region of interst, input: img_edges, output: img_edges_masked
-<img src="./result_images/region_mask.jpg" width="480" />
+Other functions that I implemented but commented out:  <br/>
+dataAugmentation :  create data agumentaion with balanced number of examples per class. <br/>
+visualize: this function displays example images for each class in the dataset , and plot a histogram for the distribution of data for each class.<br/>
+preprocess: take Y channel from YUV as indicated in the recommended paper. The single channel images are later normalized  <br/>
+testTF: test one hot encoding in tensorflow.   <br/>
 
-Step 4. Hough transform to detect lines in an image, input : img_edges_masked, output: img_lines
-<img src="./result_images/hough_all_lines.jpg" width="480" />
+# testTF.py
+Please ignore this file, used for testing tensorflow functions. 
 
-Step 5. Extrapolate line segments, superimpose on the original image, output as final result
-<img src="./result_images/hough_lines.jpg" width="480" />
+# Testing results:
+1. Original setting , classic Lenet with 2 conv layers, 2 fc layers, Y channel from YUV image, normalize using X = (X - np.amin(X)) / (np.amax(X) - np.amin(X)), the accuracy is 88% after 20 epochs
 
+2. If I use RGB (3 channels), normalize using (X_data / 255. - 0.5).astype(np.float32), 3 conv layers, 2 fc layer, I get accuracy 0.846 at 20 epochs, and 0.83582765 at 30 epochs
 
-
-### Details on draw_two_lines() function
-
-**Input**
-
-all the output lines from hough line detection
-
-**Parametesr**
-
-set a min and max slope to identify outliers 
-
-**Steps**
-
-&nbsp;
-
-    loop through all the lines 
-    
-        Positive slopes belong to left lines, negative slope belong to right lines.
-
-        Find slope (m) and bias (b) for each line
-    
-        if the line is not an outlier:
-    
-            store the line parameters (m, b) in the left line or right line parameter array 
-        
-    find the mean value for m, b for left and right lines 
-
-    Use mean m, b values to find the two end points for each of the left line and right line
-
-
-
-### 2. Identify potential shortcomings with your current pipeline
-
-One shortcoming is that it fails for the challenging case, where the lane lines are curved.  
-The current hough line function only find staight edges and extrapolate it. 
-
-### 3. Suggest possible improvements to your pipeline
-
-There are two many hand tuned parameters, such as the ones for region of interest masking, Canny edge detector, and hough line detection. This make the pipeline not robust. A potential improvement is to use machine learning to learn these parameters.

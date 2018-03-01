@@ -14,7 +14,8 @@ def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
+    X_train, X_test, X_valid = preprocess_all(X_train, X_test, X_valid)
+    # X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
     #visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     
     # Step 2: Use data agumentation to make more training data
@@ -27,7 +28,7 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
-    #   X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
+    # X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
     visualize(X_train, y_train, imgPath='../writeup/visualizeData-ychannel', isGray=True)
@@ -36,6 +37,43 @@ def prepareDataPipeline():
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
+def rgb_to_grayscale(img):
+    return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+### Normalization: zero mean and unit variance
+def normalization(x):
+    a = 0.1
+    b = 0.9
+    x_min = 0
+    x_max = 255
+    
+    return a + (x - x_min) * (b - a) / (x_max - x_min)
+
+# copied from hub.com/carlosgalvezp/Udacity-Self-Driving-Car-Nanodegree/blob/master/term1/projects/p2-traffic-signs/Traffic_Signs_Recognition.ipynb
+def preprocess_set(dataset):
+    # Declare output array
+    shape = [x for x in dataset.shape]
+    shape[3] = 1 # Will convert to grayscale
+    dataset_preprocessed = np.zeros(shape)
+    
+    # Convert from RGB to grayscale
+    for i in range(0, dataset.shape[0]):
+        dataset_preprocessed[i, :, :, :] = np.expand_dims(rgb_to_grayscale(dataset[i, :, :]), axis=2)
+    
+    #dataset_preprocessed = dataset
+        
+    # Perform normalization
+    dataset_preprocessed = normalization(dataset_preprocessed)
+    
+    return dataset_preprocessed
+
+
+def preprocess_all(X_train, X_test, X_valid):
+    X_train = preprocess_set(X_train)
+    X_test = preprocess_set(X_test)
+    X_valid = preprocess_set(X_valid)
+    return X_train, X_test, X_valid
+# end of copied 
 
 def normalizeImg(X_data):
     # scale features to be in [0, 1]
@@ -263,6 +301,8 @@ def visualize_single_augment(X_new):
 
 
 def Y_channel_YUV(X):
+    # Y channel calculation from: https://github.com/navoshta/traffic-signs/blob/master/Traffic_Signs_Recognition.ipynb
+  
     threeChannelShape = X.shape
     # shape is tuple, not mutable
     singleChannelShape = threeChannelShape[0:3] + (1,)
@@ -278,8 +318,9 @@ def Y_channel_YUV(X):
 
     # plt.imshow(X[0], cmap='gray')
     # plt.show()
+ 
+    return X
 
-    return X_singleChannel
 
 
 def normalize(X):
@@ -296,7 +337,7 @@ def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
     X_train = Y_channel_YUV(X_train)
     X_valid = Y_channel_YUV(X_valid)
     X_test = Y_channel_YUV(X_test)
-
+    
     # normalize gray images
     X_train = normalize(X_train)
     X_valid = normalize(X_valid)
@@ -305,6 +346,7 @@ def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
     # y_train, y_valid, y_test = oneHotLabel(y_train, y_valid, y_test)
         
     return X_train, y_train, X_valid, y_valid, X_test, y_test
+
 
 
 def testTF():

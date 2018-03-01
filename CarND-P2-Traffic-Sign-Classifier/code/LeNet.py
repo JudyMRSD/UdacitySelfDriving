@@ -44,16 +44,16 @@ class LeNet():
                 one_hot_labels = tf.one_hot(indices=tf.cast(self.labels, tf.int32), depth=n_classes)
             # convolution, relu:  conv1 (?, 32, 32, 6)
             # max pool:  conv1 (?, 16, 16, 6)
-            conv1 = conv_layer(filter_side=conv1_kernel_size, input_tensor=self.x, out_channels=conv1_output_channel, layer_name='conv1')
+            conv1 = conv_layer(filter_side=conv1_kernel_size, input_tensor=self.x, out_channels=conv1_output_channel, layer_name='conv1',keep_prob = 0.9)
             print("conv1", conv1.shape)
             # convolution, relu:  conv2(?, 16, 16, 16)
             # max pool: conv2(?, 8, 8, 16)
-            conv2 = conv_layer(filter_side=conv2_kernel_size, input_tensor=conv1, out_channels=conv2_output_channel, layer_name='conv2')
+            conv2 = conv_layer(filter_side=conv2_kernel_size, input_tensor=conv1, out_channels=conv2_output_channel, layer_name='conv2', keep_prob = 0.9)
             print("conv2", conv2.shape)
             # conv3 (?, 8, 8, 16)
             # conv3 (?, 4, 4, 16)
 
-            conv3 = conv_layer(filter_side=conv3_kernel_size, input_tensor=conv2, out_channels=conv3_output_channel, layer_name='conv3')
+            conv3 = conv_layer(filter_side=conv3_kernel_size, input_tensor=conv2, out_channels=conv3_output_channel, layer_name='conv3', keep_prob = 0.9)
             print("conv3", conv3.shape)
 
             # convolution, relu:  conv3(?, 8, 8, 16)
@@ -66,11 +66,12 @@ class LeNet():
 
             # fc1(?, 120)
             # fc2(?, 84)
-            fc1 = fc_layer(fc0, fc1_out, 'fc_layer')
-            fc2 = fc_layer(fc1, fc2_out, 'fc_layer')
+            fc1 = fc_layer(fc0, fc1_out, 'fc1')
+            # fc2 = fc_layer(fc1, fc2_out, 'fc2')
 
             # final fc layer
-            self.logits = fc_layer(fc2, n_classes, 'fc_layer', logitsLayer = True)
+            self.logits = fc_layer(fc1, n_classes, 'fc2', logitsLayer = True)
+            # self.logits = fc_layer(fc2, n_classes, 'fc3', logitsLayer = True)
             with tf.name_scope('loss'):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_labels,logits=self.logits)
                 self.loss = tf.reduce_mean(cross_entropy)

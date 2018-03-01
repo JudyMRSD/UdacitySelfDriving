@@ -17,10 +17,21 @@ def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lear
         os.makedirs(model_save_dir)
 
     # build LeNet
-    lenet = LeNet(img_w = 32,
+    lenet = LeNet(
+                 img_w = 32,
                  img_h = 32,
-                 img_channel = 3,
-                 n_classes=43)
+                 img_channel = 1,
+                 conv1_kernel_size = 5,
+                 conv1_output_channel = 16,
+
+                 conv2_kernel_size = 5,
+                 conv2_output_channel = 32,
+
+                 conv3_kernel_size=5,
+                 conv3_output_channel=64,
+
+                 fc1_out = 512,
+                 n_classes = 43)
 
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
@@ -107,9 +118,9 @@ def test(model_save_dir, X_test, y_test):
 
 
 def main():
-    num_epoch = 32
+    num_epoch = 102
     batch_size = 128
-    lr = 0.01
+    lr = 0.001
     model_save_dir = '../model/lenet5/'
 
     X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()

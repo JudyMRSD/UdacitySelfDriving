@@ -20,11 +20,11 @@ def prepareDataPipeline():
     
     # Step 2: Use data agumentation to make more training data
     
-    #X_train_new, y_train_new = dataAugmentation(X_train, y_train)
+    X_train_new, y_train_new = dataAugmentation(X_train, y_train)
     
     #print("before augment: number of training data  = ", X_train.shape[0])
-    #X_train = np.concatenate((X_train, X_train_new), axis=0)
-    #y_train = np.concatenate((y_train, y_train_new), axis=0)
+    X_train = np.concatenate((X_train, X_train_new), axis=0)
+    y_train = np.concatenate((y_train, y_train_new), axis=0)
 
     #print("after augment: number of training data  = ",X_train.shape[0])
     #visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
@@ -181,7 +181,7 @@ def randomTransform(src,
     return dst
 
 # factor by which to expand data
-def dataAugmentation(X_train, y_train, factor = 3):
+def dataAugmentation(X_train, y_train, factor = 5):
     print("enter data augmentation")
     # count frequency of each class
     freq = defaultdict(int)

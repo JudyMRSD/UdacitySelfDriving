@@ -14,7 +14,7 @@ def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    X_train, X_test, X_valid = preprocess_all(X_train, X_test, X_valid)
+    # X_train, X_test, X_valid = preprocess_all(X_train, X_test, X_valid)
     # X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
     #visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     
@@ -28,6 +28,7 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
+    X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess_gray(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
@@ -321,7 +322,47 @@ def Y_channel_YUV(X):
  
     return X
 
+def gray(X):
+    # Y channel calculation from: https://github.com/navoshta/traffic-signs/blob/master/Traffic_Signs_Recognition.ipynb
+    threeChannelShape = X.shape
+    # shape is tuple, not mutable
+    singleChannelShape = threeChannelShape[0:3] + (1,)
+    # set to single channel
+    X_singleChannel = np.zeros(singleChannelShape)
 
+    for i in range(0, len(X)):
+        img = X[i]
+        gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        # print("gray shape", gray_img.shape) # (32, 32)
+        gray_img = np.expand_dims(gray_img, axis=2)
+        # TODO: fix this
+        gray_img=normalization(gray_img)
+
+        X_singleChannel[i] = gray_img
+
+        # print("gray img shape",X_singleChannel[i].shape) # (32,32,1)
+
+    # plt.imshow(X[0], cmap='gray')
+    # plt.show()
+ 
+    return X_singleChannel
+
+
+def preprocess_gray(X_train, y_train, X_valid, y_valid, X_test, y_test):
+     
+    # Y channel
+    X_train = Y_channel_YUV(X_train)
+    X_valid = Y_channel_YUV(X_valid)
+    X_test = Y_channel_YUV(X_test)
+    
+    # normalize gray images
+    X_train = gray(X_train)
+    X_valid = gray(X_valid)
+    X_test = gray(X_test)
+    # one hot encoding labels
+    # y_train, y_valid, y_test = oneHotLabel(y_train, y_valid, y_test)
+        
+    return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 def normalize(X):
     # Normalized Data  to 0 to 1  normalized = (x-min(x))/(max(x)-min(x))

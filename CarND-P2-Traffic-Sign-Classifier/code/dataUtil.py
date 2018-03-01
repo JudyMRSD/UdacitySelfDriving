@@ -19,7 +19,9 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     
     # Step 2: Use data agumentation to make more training data
+    
     #X_train_new, y_train_new = dataAugmentation(X_train, y_train)
+    
     #print("before augment: number of training data  = ", X_train.shape[0])
     #X_train = np.concatenate((X_train, X_train_new), axis=0)
     #y_train = np.concatenate((y_train, y_train_new), axis=0)
@@ -28,75 +30,14 @@ def prepareDataPipeline():
     #visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
-    X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess_gray(X_train, y_train, X_valid, y_valid, X_test, y_test)
+    X_train, X_valid, X_test = preprocess_gray(X_train, X_valid, X_test)
     # X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
     visualize(X_train, y_train, imgPath='../writeup/visualizeData-ychannel', isGray=True)
 
-
-
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
-def rgb_to_grayscale(img):
-    return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-
-### Normalization: zero mean and unit variance
-def normalization(x):
-    a = 0.1
-    b = 0.9
-    x_min = 0
-    x_max = 255
-    
-    return a + (x - x_min) * (b - a) / (x_max - x_min)
-
-# copied from hub.com/carlosgalvezp/Udacity-Self-Driving-Car-Nanodegree/blob/master/term1/projects/p2-traffic-signs/Traffic_Signs_Recognition.ipynb
-def preprocess_set(dataset):
-    # Declare output array
-    shape = [x for x in dataset.shape]
-    shape[3] = 1 # Will convert to grayscale
-    dataset_preprocessed = np.zeros(shape)
-    
-    # Convert from RGB to grayscale
-    for i in range(0, dataset.shape[0]):
-        dataset_preprocessed[i, :, :, :] = np.expand_dims(rgb_to_grayscale(dataset[i, :, :]), axis=2)
-    
-    #dataset_preprocessed = dataset
-        
-    # Perform normalization
-    dataset_preprocessed = normalization(dataset_preprocessed)
-    
-    return dataset_preprocessed
-
-
-def preprocess_all(X_train, X_test, X_valid):
-    X_train = preprocess_set(X_train)
-    X_test = preprocess_set(X_test)
-    X_valid = preprocess_set(X_valid)
-    return X_train, X_test, X_valid
-# end of copied 
-
-def normalizeImg(X_data):
-    # scale features to be in [0, 1]
-    X_data = X_data.astype(np.float32)
-    X_data = (X_data / 255. - 0.5).astype(np.float32)
-    '''
-    numExample = X_data.shape[0]
-    # adapted from https://navoshta.com/traffic-signs-classification/
-    # examples enhances an image with low contrast, to enhance contrast
-    # using a method called histogram equalization, which “spreads out the most frequent intensity values”
-    for i in range(numExample):
-        # Contrast Limited Adaptive Histogram Equalization (CLAHE)
-        X_data[i] = exposure.equalize_adapthist(X_data[i])
-    '''
-    return X_data
-
-def normalizeAll(X_test, X_train, X_valid):
-    X_test = normalizeImg(X_test)
-    X_valid = normalizeImg(X_valid)
-    X_train = normalizeImg(X_train)
-
-    return X_test, X_train, X_valid
 
 
 def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
@@ -240,7 +181,7 @@ def randomTransform(src,
     return dst
 
 # factor by which to expand data
-def dataAugmentation(X_train, y_train, factor = 10):
+def dataAugmentation(X_train, y_train, factor = 3):
     print("enter data augmentation")
     # count frequency of each class
     freq = defaultdict(int)
@@ -347,47 +288,20 @@ def gray(X):
  
     return X_singleChannel
 
+def normalization(x):
+    x_min = 0
+    x_max = 255
+    return (x - x_min) / (x_max - x_min)
 
-def preprocess_gray(X_train, y_train, X_valid, y_valid, X_test, y_test):
+
+def preprocess_gray(X_train, X_valid, X_test):
      
-    # Y channel
-    X_train = Y_channel_YUV(X_train)
-    X_valid = Y_channel_YUV(X_valid)
-    X_test = Y_channel_YUV(X_test)
-    
-    # normalize gray images
+    # normalized gray images
     X_train = gray(X_train)
     X_valid = gray(X_valid)
     X_test = gray(X_test)
-    # one hot encoding labels
-    # y_train, y_valid, y_test = oneHotLabel(y_train, y_valid, y_test)
         
-    return X_train, y_train, X_valid, y_valid, X_test, y_test
-
-def normalize(X):
-    # Normalized Data  to 0 to 1  normalized = (x-min(x))/(max(x)-min(x))
-    X = (X - np.amin(X)) / (np.amax(X) - np.amin(X))  # if input X (None, 32, 32 , 3), output X (None, 32, 32 , 3)
-    # X = (X-128)/128
-
-    return X
-
-
-def preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test):
-     
-    # Y channel
-    X_train = Y_channel_YUV(X_train)
-    X_valid = Y_channel_YUV(X_valid)
-    X_test = Y_channel_YUV(X_test)
-    
-    # normalize gray images
-    X_train = normalize(X_train)
-    X_valid = normalize(X_valid)
-    X_test = normalize(X_test)
-    # one hot encoding labels
-    # y_train, y_valid, y_test = oneHotLabel(y_train, y_valid, y_test)
-        
-    return X_train, y_train, X_valid, y_valid, X_test, y_test
-
+    return X_train, X_valid, X_test
 
 
 def testTF():

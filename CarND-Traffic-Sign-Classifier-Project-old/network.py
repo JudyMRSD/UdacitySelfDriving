@@ -62,19 +62,20 @@ def LeNet(X_train, numClass):
     # input tensor : [batch, in_height, in_width, in_channels]
     # filter: [filter_height, filter_width, in_channels, out_channels]
     conv1 = tf.nn.conv2d(X_train, conv1_W, strides=[1, 1, 1, 1], padding='SAME') + conv1_b
-    # print("conv1",conv1.get_shape())
+    print("after conv2d,  conv1",conv1.get_shape())
 
     # Activation
     # relu:  f(x) = max(0,x)
     conv1 = tf.nn.relu(conv1)
-    # dropout
-    conv1 = tf.nn.dropout(conv1, keep_prob)
+    
 
     # max pooling reduce by 1/2
     # Input = 32x32x6. Output = 16x16x6.
     # new_height = 32/2 = 16
     # new_width = 32/2 = 16
     conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
+    # dropout
+    conv1 = tf.nn.dropout(conv1, keep_prob)
     # print("conv1",conv1.get_shape())
     # Layer 2: Convolutional. Input = 16x16x6. Output = 16x16x16.
     # -----------------------------------------------------------

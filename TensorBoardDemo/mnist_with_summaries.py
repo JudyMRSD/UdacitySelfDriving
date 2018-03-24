@@ -119,7 +119,16 @@ def train():
     with tf.name_scope('total'):
       cross_entropy = tf.losses.sparse_softmax_cross_entropy(
           labels=y_, logits=y)
-  tf.summary.scalar('cross_entropy', cross_entropy)
+  
+
+
+
+
+
+
+
+
+  
 
   with tf.name_scope('train'):
     train_step = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(

@@ -1,16 +1,11 @@
 import cv2
 import pickle
-from tensorflow.examples.tutorials.mnist import input_data
-import numpy as np
-import random
+
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-
-from sklearn.utils import shuffle
+from skimage import exposure
 import tensorflow as tf
-from tensorflow.contrib.layers import flatten
-from keras.preprocessing.image import ImageDataGenerator
+from pathlib import Path
 from collections import defaultdict
 
 
@@ -18,31 +13,49 @@ def prepareDataPipeline():
     # Step 1: Import data
 
     X_train_coord, X_train, y_train, X_valid, y_valid, X_test, y_test = loadData()
-    #visualize(X_train, y_train, imgPath='./writeup/visualizeData')
+    X_test, X_train, X_valid = normalizeAll(X_test, X_train, X_valid)
+    visualize(X_train, y_train, imgPath='../writeup/visualizeData')
     # Step 2: Use data agumentation to make more training data
-    X_train_new, y_train_new = dataAugmentation(X_train, y_train)
-    print("before augment: number of training data  = ", X_train.shape[0])
-    X_train = np.concatenate((X_train, X_train_new), axis=0)
-    y_train = np.concatenate((y_train, y_train_new), axis=0)
-
-    freq_new = defaultdict(int)
-    for c in y_train_new:
-        freq_new[c] += 1
-
+    #X_train_new, y_train_new = dataAugmentation(X_train, y_train)
+    #print("before augment: number of training data  = ", X_train.shape[0])
+    #X_train = np.concatenate((X_train, X_train_new), axis=0)
+    #y_train = np.concatenate((y_train, y_train_new), axis=0)
 
     print("after augment: number of training data  = ",X_train.shape[0])
-    visualize(X_train, y_train, imgPath='./writeup/visualizeAugment')
+    visualize(X_train, y_train, imgPath='../writeup/visualizeAugment')
 
     # Step 3: Data processing for tarin, validation, and test dataset
-    X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
+    # X_train, y_train, X_valid, y_valid, X_test, y_test = preprocess(X_train, y_train, X_valid, y_valid, X_test, y_test)
     # Step 4: visualize preprocessed data
 
-    visualize(X_train, y_train, imgPath='./writeup/visualizeData-ychannel', isGray=True)
+    visualize(X_train, y_train, imgPath='../writeup/visualizeData-ychannel', isGray=True)
 
 
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
+
+def normalizeImg(X_data):
+    # scale features to be in [0, 1]
+    X_data = X_data.astype(np.float32)
+    X_data = (X_data / 255.).astype(np.float32)
+    '''
+    numExample = X_data.shape[0]
+    # adapted from https://navoshta.com/traffic-signs-classification/
+    # examples enhances an image with low contrast, to enhance contrast
+    # using a method called histogram equalization, which “spreads out the most frequent intensity values”
+    for i in range(numExample):
+        # Contrast Limited Adaptive Histogram Equalization (CLAHE)
+        X_data[i] = exposure.equalize_adapthist(X_data[i])
+    '''
+    return X_data
+
+def normalizeAll(X_test, X_train, X_valid):
+    X_test = normalizeImg(X_test)
+    X_valid = normalizeImg(X_valid)
+    X_train = normalizeImg(X_train)
+
+    return X_test, X_train, X_valid
 
 
 def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
@@ -60,10 +73,13 @@ def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
 # load pickled data
 
 def loadData():
-    data_folder = "./traffic-signs-data/"
+    data_folder = "../traffic-signs-data/"
+
+
     training_file = data_folder + "train.p"
     validation_file = data_folder + "valid.p"
     testing_file = data_folder + "test.p"
+
 
     with open(training_file, mode='rb') as f:
         train = pickle.load(f)
@@ -185,8 +201,8 @@ def randomTransform(src,
 
     return dst
 
-
-def dataAugmentation(X_train, y_train, factor = 2):
+# factor by which to expand data
+def dataAugmentation(X_train, y_train, factor = 10):
     print("enter data augmentation")
     # count frequency of each class
     freq = defaultdict(int)
@@ -243,7 +259,7 @@ def visualize_single_augment(X_new):
         ax.set_title(i)
         ax.imshow(np.squeeze(X_new[i]), cmap='gray')
 
-    plt.savefig('./writeup/visualizeAugment_singleImg.jpg')
+    plt.savefig('../writeup/visualizeAugment_singleImg.jpg')
     plt.close('all')
 
 

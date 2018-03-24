@@ -36,8 +36,8 @@ for line in lines:
     for x1, y1, x2, y2 in line:
         # line(img, firstEndPoint, secondEndPoint, color, thickness)
         cv2.line(line_image, (x1, y1), (x2,y2), (255,0,0), 10)
-        plt.imshow(line_image)
-        plt.show()
+        #plt.imshow(line_image)
+        #plt.show()
 # Create a "color" binary image to combine with line_img
 # stack masked_edges (width*height) to make a color_edges (width*height*3)
 # to match the dimension of line_img (width*height*3)

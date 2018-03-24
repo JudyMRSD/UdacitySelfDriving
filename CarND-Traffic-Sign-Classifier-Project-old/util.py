@@ -1,4 +1,4 @@
-import cv2
+dimport cv2
 import pickle
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
@@ -27,6 +27,18 @@ def prepareDataPipeline():
     # visualizeAugmented(X_train, y_train, X_train_coord)
 
     return X_train, y_train, X_valid, y_valid, X_test, y_test
+
+
+def evaluate(X_data, y_data, BATCH_SIZE, accuracy_operation):
+
+    num_examples = len(X_data)
+    total_accuracy = 0
+    sess = tf.get_default_session()
+    for offset in range(0, num_examples, BATCH_SIZE):
+        batch_x, batch_y = X_data[offset:offset + BATCH_SIZE], y_data[offset:offset + BATCH_SIZE]
+        accuracy = sess.run(accuracy_operation, feed_dict={x: batch_x, y: batch_y})
+        total_accuracy += (accuracy * len(batch_x))
+    return total_accuracy / num_examples
 
 
 # load pickled data

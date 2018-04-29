@@ -1,36 +1,41 @@
 import tensorflow as tf
 import os
+import glob
+
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 from LeNet import LeNet
 from sklearn.utils import shuffle
-from util import *
-
+from tfUtil import *
+from dataUtil import *
 # LeNet here stands for a single layer network , not the actual lenet
 
-def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
-    log_dir = './result'
+def run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, learning_rate, model_save_dir, restorePath=None):
+    log_dir = '../result'
 
     if not os.path.exists(model_save_dir):
         os.makedirs(model_save_dir)
 
     # build LeNet
-    lenet = LeNet()
+    lenet = LeNet(
+                 img_w = 32,
+                 img_h = 32,
+                 img_channel = 1,
+                 conv1_kernel_size = 5,
+                 conv1_output_channel = 16,
+
+                 conv2_kernel_size = 5,
+                 conv2_output_channel = 32,
+
+                 conv3_kernel_size=5,
+                 conv3_output_channel=64,
+
+                 fc1_out = 512,
+                 n_classes = 43)
 
     with tf.name_scope("train"):
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(lenet.loss)
 
-    # test tensor board
-    # tf.summary.scalar('loss', lenet.loss)
-    # merged = tf.summary.merge_all()
-
-    # loading data
-    mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
-
-
-    X_train = mnist.train.images
-    X_train = np.reshape(X_train, [-1,28,28,1])
-    y_train = mnist.train.labels
     num_examples = X_train.shape[0]
 
     print("starts training")
@@ -44,11 +49,21 @@ def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
         # Create a saver.
         # The tf.train.Saver must be created after the variables that you want to restore (or save).
         # Additionally it must be created in the same graph as those variables.
-        saver = tf.train.Saver(max_to_keep=10)
 
+
+        # restore training
+        if restorePath:
+            print("restore training")
+            var_list = tf.global_variables()
+            saver = tf.train.Saver(var_list=var_list)
+            saver.restore(sess, tf.train.latest_checkpoint(model_save_dir))
+        # start a new saver
+        else:
+            saver = tf.train.Saver(max_to_keep=1)
 
         # each epoch will shuffle the entire training data
         for ep in range(num_epoch):
+            print("epoch: ", ep)
             X_train, y_train =  shuffle(X_train, y_train)
 
             # train on each batch
@@ -59,30 +74,35 @@ def run_training(num_epoch, batch_size, learning_rate, model_save_dir):
                 feed = {lenet.x: batch_x, lenet.labels: batch_y}
                 _, loss, summary = sess.run([train_step, lenet.loss, lenet.merged], feed_dict=feed)
                 # print("summary", summary)
+                # print("offset+num_examples*ep", offset+num_examples*ep)
                 train_writer.add_summary(summary, offset+num_examples*ep)
 
             # test on training data
-            print("loss=", loss)
+            # print("loss=", loss)
 
-            accuracy = sess.run(lenet.accuracy, feed_dict=feed)
 
-            print("accuracy = ", accuracy)
-            # save model every other epoch
+            # save model
             if ep % 1 == 0:
-                # Append the step number to the checkpoint name:
-                saver.save(sess, model_save_dir+'/my-model', global_step=ep)
+                print("epoch: ", ep)
+                print("loss=", loss)
+                # test on validation set
+                feed = {lenet.x: X_valid, lenet.labels: y_valid}
+                accuracy = sess.run(lenet.accuracy, feed_dict=feed)
 
-def test(model_save_dir):
+                print("accuracy = ", accuracy)
+                # Append the step number to the checkpoint name:
+                saver.save(sess, model_save_dir + '/my-model', global_step=ep)
+
+def test(model_save_dir, X_test, y_test):
 
 
     # load the graph structure from the ".meta" file into the current graph.
     tf.reset_default_graph()
-    lenet = LeNet()
-    # loading data
-    mnist = input_data.read_data_sets("../MNIST_data/", one_hot=False)
-    X_test = mnist.test.images
-    X_test = np.reshape(X_test, [-1, 28, 28, 1])
-    y_test = mnist.test.labels
+    lenet = LeNet(img_w=32,
+                  img_h=32,
+                  img_channel=1,
+                  n_classes=43)
+
     # load the values of variables.
     # values only exist within a session
     # evaluate the model
@@ -90,23 +110,23 @@ def test(model_save_dir):
         var_list = tf.global_variables()
 
         saver = tf.train.Saver(var_list=var_list)
-        saver.restore(sess, tf.train.latest_checkpoint('./model/lenet5/'))
+        saver.restore(sess, tf.train.latest_checkpoint('../model/lenet5/'))
 
         feed = {lenet.x: X_test, lenet.labels: y_test}
         test_accuracy = sess.run(lenet.accuracy, feed_dict=feed)
         print("Test Accuracy = {:.3f}".format(test_accuracy))
 
 
-
-
 def main():
-    num_epoch = 2
+    num_epoch = 102
     batch_size = 128
-    lr = 0.01
-    model_save_dir = './model/lenet5'
-    # run_training(num_epoch, batch_size, lr, model_save_dir)
-    test(model_save_dir)
+    lr = 0.001
+    model_save_dir = '../model/lenet5/'
+
+    X_train, y_train, X_valid, y_valid, X_test, y_test = prepareDataPipeline()
+
+    run_training(X_train, y_train, X_valid, y_valid, num_epoch, batch_size, lr, model_save_dir)
+    #test(X_test, y_test, model_save_dir)
 
 if __name__ == '__main__':
     main()
-
